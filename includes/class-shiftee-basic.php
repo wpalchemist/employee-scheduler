@@ -266,6 +266,8 @@ if ( ! class_exists( 'Shiftee_Basic' ) ) {
 			$this->loader->add_action( 'wp_ajax_Shiftee_Basic_Public', $plugin_public, 'get_calendar_events' );
 			$this->loader->add_action( 'wp_ajax_nopriv_Shiftee_Basic_Public', $plugin_public, 'get_calendar_events' );
 
+			$this->loader->add_filter( 'sanitize_file_name_chars', $plugin_public, 'allow_slashes' );
+
 		}
 
 		/**

@@ -73,6 +73,7 @@
 								job: $( '#shiftee-calendar' ).attr( 'data-job' ),
 								manager: $( '#shiftee-calendar' ).attr( 'data-manager' ),
 								employee: $( '#shiftee-calendar' ).attr( 'data-employee' ),
+								nonce: $( '#shiftee-calendar' ).attr( 'data-nonce' )
 							},
 							error: function(result) {
 								$( '#shiftee-calendar-error' ).show();

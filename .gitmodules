@@ -1,0 +1,3 @@
+[submodule "libraries/cmb2"]
+	path = libraries/cmb2
+	url = https://github.com/CMB2/CMB2

@@ -9,14 +9,14 @@
  * @subpackage Shiftee Basic/public
  */
 
-/**
- * The public-facing functionality of the plugin.
- *
- * @package    Shiftee Basic
- * @subpackage Shiftee Basic/public
- * @author     Range <support@shiftee.co>
- */
 if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
+	/**
+	 * The public-facing functionality of the plugin.
+	 *
+	 * @package    Shiftee Basic
+	 * @subpackage Shiftee Basic/public
+	 * @author     Range <support@shiftee.co>
+	 */
 	class Shiftee_Basic_Public {
 
 		/**
@@ -145,7 +145,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 					'fullcalendar',
 				),
 				$this->version,
-				false
+				true
 			);
 			wp_localize_script( $this->plugin_name . '_no_datepicker', 'shiftee_ajax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
 
@@ -183,7 +183,29 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			$login_form .= wp_login_form( $args );
 
 			if ( $echo ) {
-				echo $login_form;
+				$allowed_html = array(
+					'form'  => array(
+						'id'     => array(),
+						'name'   => array(),
+						'action' => array(),
+						'method' => array(),
+					),
+					'p'     => array(
+						'class' => array(),
+					),
+					'label' => array(
+						'for' => array(),
+					),
+					'input' => array(
+						'id'    => array(),
+						'class' => array(),
+						'type'  => array(),
+						'name'  => array(),
+						'value' => array(),
+						'size'  => array(),
+					),
+				);
+				echo wp_kses( $allowed_html, $login_form );
 			} else {
 				return $login_form;
 			}
@@ -201,10 +223,9 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		 *
 		 * @return string $title The filtered post title
 		 */
-
 		public function single_shift_title( $title ) {
 			global $post;
-			if ( is_singular( 'shift' ) && $title == $post->post_title && is_main_query() ) {
+			if ( is_singular( 'shift' ) && $title === $post->post_title && is_main_query() ) {
 				$title = __( 'Shift Details', 'employee-scheduler' );
 			}
 
@@ -216,7 +237,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		 *
 		 * @since 1.0
 		 *
-		 * @param $content
+		 * @param string $content The shift content.
 		 *
 		 * @return string
 		 */
@@ -228,7 +249,8 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 					return $this->show_login_form();
 				}
 
-				if ( ! empty( $_POST ) ) {
+				// phpcs:ignore
+				if ( ! empty( $_POST ) ) { // we'll check for the nonce in process_single_shift_forms().
 					$this->process_single_shift_forms();
 				}
 
@@ -252,7 +274,8 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		public function process_single_shift_forms() {
 
 			// if employee left a note.
-			if ( isset( $_POST['shiftee-employee-shift-note'] ) && 'Save Note' == ( $_POST['shiftee-employee-shift-note'] ) ) {
+			// phpcs:ignore
+			if ( isset( $_POST['shiftee-employee-shift-note'] ) && 'Save Note' === ( $_POST['shiftee-employee-shift-note'] ) ) { // We'll verify the nonce in save_employee_note()
 				$confirmation = $this->save_employee_note();
 				if ( ! empty( $confirmation ) ) {
 					echo '<p class="' . esc_attr( $confirmation['status'] ) . '">' . esc_html( $confirmation['message'] ) . '</p>';
@@ -260,12 +283,14 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			}
 
 			// If employee just pushed the clock in button.
-			if ( isset( $_POST['shiftee-clock-in-form'] ) && 'Clock In' == ( $_POST['shiftee-clock-in-form'] ) ) {
+			// phpcs:ignore
+			if ( isset( $_POST['shiftee-clock-in-form'] ) && 'Clock In' === ( $_POST['shiftee-clock-in-form'] ) ) { // we're just checking if this exists - we'll sanitize it before using it.
 				$this->clock_in();
 			}
 
 			// If employee just pushed the clock out button.
-			if ( isset( $_POST['shiftee-clock-out-form'] ) && 'Clock Out' == ( $_POST['shiftee-clock-out-form'] ) ) {
+			// phpcs:ignore
+			if ( isset( $_POST['shiftee-clock-out-form'] ) && 'Clock Out' === ( $_POST['shiftee-clock-out-form'] ) ) { // we're just checking if this exists - we'll sanitize it before using it.
 				$this->clock_out();
 			}
 
@@ -276,7 +301,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		 *
 		 * If the shift date is today, and if the current user is assigned to the shift and has not clocked in, show the clock in form
 		 *
-		 * @param $shift
+		 * @param int $shift ID of the shift we're updating.
 		 *
 		 * @return string HTML clock-in form
 		 */
@@ -289,8 +314,8 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			$end_date   = get_post_meta( $shift, '_shiftee_shift_end', true );
 
 			if ( $assigned_employee == $current_user->ID // employee assigned to the shift is viewing the shift.
-				 && ( current_time( 'Ymd' ) == date( 'Ymd', $start_date ) || current_time( 'Ymd' ) == date( 'Ymd', $end_date ) ) // shift is scheduled for today.
-				 && '' == get_post_meta( $shift, '_shiftee_clock_in', true ) // employee has not clocked in already.
+				 && ( current_time( 'Ymd' ) === gmdate( 'Ymd', $start_date ) || current_time( 'Ymd' ) === gmdate( 'Ymd', $end_date ) ) // shift is scheduled for today.
+				 && '' === get_post_meta( $shift, '_shiftee_clock_in', true ) // employee has not clocked in already.
 			) {
 				ob_start();
 				include 'partials/clock-in.php';
@@ -308,10 +333,14 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		 * @since 2.0.0
 		 */
 		private function clock_in() {
-			if ( ! isset( $_POST['shiftee_clock_in_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( $_POST['shiftee_clock_in_nonce'] ), 'shiftee_clock_in' ) ) {
+			if ( ! isset( $_POST['shiftee_clock_in_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['shiftee_clock_in_nonce'] ) ), 'shiftee_clock_in' ) ) {
 				exit( 'Permission error.' );
 			}
 
+			if ( ! isset( $_POST['shift-id'] ) ) {
+				$error = __( 'Could not find your shift.  Please go back and try again.', 'employee-scheduler' );
+				wp_die( esc_html( $error ) );
+			}
 			$shift = get_post( intval( $_POST['shift-id'] ) );
 			if ( ! isset( $shift->post_type ) || 'shift' !== $shift->post_type ) {
 				$error = __( 'Could not clock in.  Please go back and try again.', 'employee-scheduler' );
@@ -322,14 +351,14 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			update_post_meta( $shift->ID, '_shiftee_clock_in', current_time( 'timestamp' ) );
 
 			$testing_meta = get_post_meta( $shift->ID, '_shiftee_clock_in', true );
-			if ( ! isset( $testing_meta ) || '' == $testing_meta ) {
-				wp_die( __( 'Something has gone wrong.  Please use the back button to try to clock in again.  If you continue to receive this error, contact the site administrator.', 'employee-scheduler' ) );
+			if ( ! isset( $testing_meta ) || '' === $testing_meta ) {
+				wp_die( esc_html__( 'Something has gone wrong.  Please use the back button to try to clock in again.  If you continue to receive this error, contact the site administrator.', 'employee-scheduler' ) );
 			}
 
 			// save address.
 			if ( isset( $_POST['latitude'] ) && isset( $_POST['longitude'] ) ) {
 
-				$address = $this->get_address( sanitize_text_field( $_POST['latitude'] ), sanitize_text_field( $_POST['longitude'] ) );
+				$address = $this->get_address( sanitize_text_field( wp_unslash( $_POST['latitude'] ) ), sanitize_text_field( wp_unslash( $_POST['longitude'] ) ) );
 				update_post_meta( $shift->ID, '_shiftee_location_clock_in', sanitize_text_field( $address ) );
 
 			}
@@ -342,8 +371,8 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		/**
 		 * Given latitude and longitude, get a street address
 		 *
-		 * @param string $lat
-		 * @param string $long
+		 * @param string $lat Latitude.
+		 * @param string $long Longitude.
 		 *
 		 * @since 2.0.0
 		 *
@@ -378,7 +407,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		 *
 		 * If the shift date is today, and the current user is assigned to the shift and has already clocked in, show the clock out button.
 		 *
-		 * @param int $shift
+		 * @param int $shift The shift we're updating.
 		 *
 		 * @return string HTML clock-out form
 		 */
@@ -391,7 +420,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			$end_date   = get_post_meta( $shift, '_shiftee_shift_end', true );
 
 			if ( $assigned_employee == $current_user->ID // employee assigned to the shift is viewing the shift.
-				 && ( current_time( 'Ymd' ) == date( 'Ymd', $start_date ) || current_time( 'Ymd' ) == date( 'Ymd', $end_date ) ) // shift is scheduled for today.
+				 && ( current_time( 'Ymd' ) === gmdate( 'Ymd', $start_date ) || current_time( 'Ymd' ) === gmdate( 'Ymd', $end_date ) ) // shift is scheduled for today.
 				 && '' !== get_post_meta( $shift, '_shiftee_clock_in', true ) // employee clocked in already.
 				 && '' == get_post_meta( $shift, '_shiftee_clock_out', true ) // employee has not clocked out.
 			) {
@@ -412,8 +441,13 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		 * @since 2.0.0
 		 */
 		private function clock_out() {
-			if ( ! isset( $_POST['shiftee_clock_out_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( $_POST['shiftee_clock_out_nonce'] ), 'shiftee_clock_out' ) ) {
+			if ( ! isset( $_POST['shiftee_clock_out_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['shiftee_clock_out_nonce'] ) ), 'shiftee_clock_out' ) ) {
 				exit( 'Permission error.' );
+			}
+
+			if ( ! isset( $_POST['shift-id'] ) ) {
+				$error = __( 'No shift found.  Please go back and try again.', 'employee-scheduler' );
+				wp_die( esc_html( $error ) );
 			}
 
 			$shift = get_post( intval( $_POST['shift-id'] ) );
@@ -426,7 +460,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			update_post_meta( $shift->ID, '_shiftee_clock_out', current_time( 'timestamp' ) );
 
 			$testing_meta = get_post_meta( $shift->ID, '_shiftee_clock_out', true );
-			if ( ! isset( $testing_meta ) || '' == $testing_meta ) {
+			if ( ! isset( $testing_meta ) || '' === $testing_meta ) {
 				wp_die( esc_html__( 'Something has gone wrong.  Please use the back button to try to clock out again.  If you continue to receive this error, contact the site administrator.', 'employee-scheduler' ) );
 			}
 
@@ -437,7 +471,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			// save address.
 			if ( isset( $_POST['latitude'] ) && isset( $_POST['longitude'] ) ) {
 
-				$address = $this->get_address( sanitize_text_field( $_POST['latitude'] ), sanitize_text_field( $_POST['longitude'] ) );
+				$address = $this->get_address( sanitize_text_field( wp_unslash( $_POST['latitude'] ) ), sanitize_text_field( wp_unslash( $_POST['longitude'] ) ) );
 				update_post_meta( $shift->ID, '_shiftee_location_clock_out', sanitize_text_field( $address ) );
 
 			}
@@ -495,7 +529,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 
 			$current_user = wp_get_current_user();
 
-			if ( $assigned_employee == $current_user->ID ) {
+			if ( $assigned_employee === $current_user->ID ) {
 				include 'partials/employee-note-form.php';
 			}
 		}
@@ -511,16 +545,27 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		 */
 		public function save_employee_note() {
 
-			if ( ! isset( $_POST['shiftee_employee_note_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( $_POST['shiftee_employee_note_nonce'] ), 'shiftee_employee_note' ) ) {
+			if ( ! isset( $_POST['shiftee_employee_note_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['shiftee_employee_note_nonce'] ) ), 'shiftee_employee_note' ) ) {
 				exit( 'Permission error.' );
 			}
 
-			if ( ! isset( $_POST['note'] ) || '' == $_POST['note'] ) {
+			if ( ! isset( $_POST['note'] ) || '' === $_POST['note'] ) {
 				wp_die( esc_html__( 'Your note is empty!  Please go back and enter a note.', 'employee-scheduler' ) );
 			}
 
 			// Make sure we actually have a shift.
-			$shift = get_post( intval( $_POST['shift-id'] ) );
+			if ( isset( $_POST['shift-id'] ) ) {
+				$shift = get_post( intval( $_POST['shift-id'] ) );
+			} else {
+				$error = array(
+					'status'  => 'shiftee-failure',
+					'message' => esc_html__( 'We couldn\'t find the shift to associate with this note.  Please contact the site administrator.', 'employee-scheduler' ),
+				);
+
+				unset( $_POST );
+
+				return $error;
+			}
 			if ( ! isset( $shift->post_type ) || 'shift' !== $shift->post_type ) {
 				$error = array(
 					'status'  => 'shiftee-failure',
@@ -559,7 +604,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 				return $error;
 			}
 
-			do_action( 'shiftee_save_employee_note_action', $shift, $_POST['note'] );
+			do_action( 'shiftee_save_employee_note_action', $shift, sanitize_text_field( wp_unslash( $_POST['note'] ) ) );
 
 			$confirmation = array(
 				'status'  => 'shiftee-success',
@@ -590,19 +635,17 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		 */
 		public function master_schedule_shortcode( $atts ) {
 
-			extract(
-				shortcode_atts(
-					array(
-						'type'     => '',
-						'status'   => '',
-						'location' => '',
-						'job'      => '',
-						'public'   => 'false',
-						'manager'  => '',
-						'employee' => '',
-					),
-					$atts
-				)
+			$args = shortcode_atts(
+				array(
+					'type'     => '',
+					'status'   => '',
+					'location' => '',
+					'job'      => '',
+					'public'   => 'false',
+					'manager'  => '',
+					'employee' => '',
+				),
+				$atts
 			);
 
 			$calendar_options = $this->get_calendar_options();
@@ -614,16 +657,17 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			wp_enqueue_style( 'fullcalendar' );
 			wp_localize_script( $this->plugin_name . '_no_datepicker', 'calendar_options', $calendar_options );
 
-			if ( ! $this->helper->user_is_allowed() && 'false' == $public ) {
+			if ( ! $this->helper->user_is_allowed() && 'false' === $public ) {
 				return $this->show_login_form();
 			}
 
-			$data = 'data-type="' . $type . '"
-					data-status="' . $status . '"
-					data-location="' . $location . '"
-					data-job="' . $job . '"
-					data-employee="' . $employee . '"
-					data-manager="' . $manager . '"';
+			$data = 'data-type="' . $args['type'] . '"
+					data-status="' . $args['status'] . '"
+					data-location="' . $args['location'] . '"
+					data-job="' . $args['job'] . '"
+					data-employee="' . $args['employee'] . '"
+					data-manager="' . $args['manager'] . '"
+					data-nonce="' . wp_create_nonce( 'shiftee_calendar_nonce' ) . '"';
 
 			return $this->display_calendar( $data );
 
@@ -655,7 +699,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		 *
 		 * @since 2.2.0
 		 *
-		 * @param string $data
+		 * @param string $data The parameters of what to display in the calendar, sent through AJAX.
 		 *
 		 * @return string
 		 */
@@ -726,13 +770,13 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		 *
 		 * @since 2.2.0
 		 *
-		 * @param $id
+		 * @param int $id  ID of the shift.
 		 *
 		 * @return string
 		 */
 		public function get_shift_title( $id ) {
 			$job = $this->helper->get_shift_connection( $id, 'job', 'name' );
-			if ( '' == $job ) {
+			if ( '' === $job ) {
 				$job = get_the_title( $id );
 			}
 
@@ -744,7 +788,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		 *
 		 * @since 2.2.0
 		 *
-		 * @param $id
+		 * @param int $id ID of the location.
 		 *
 		 * @return string
 		 */
@@ -765,7 +809,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		 *
 		 * @since 2.2.0
 		 *
-		 * @param int $id
+		 * @param int $id ID of employee.
 		 *
 		 * @return string
 		 */
@@ -786,13 +830,18 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		/**
 		 * Generate the query args to find all the shifts for the master schedule and your schedule shortcodes.
 		 *
-		 * @param string $employee
+		 * @param string $employee Employee whose shifts to show.
 		 *
 		 * @return array
 		 */
 		private function make_query_args( $employee = '' ) {
-			$start = strtotime( $_POST['start'] );
-			$end   = strtotime( $_POST['end'] ) + 86399;
+			if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'shiftee_calendar_nonce' ) ) {
+				$args = array();
+				return $args;
+			}
+
+			$start = strtotime( $_POST['start'] ); // phpcs:ignore
+			$end   = strtotime( $_POST['end'] ) + 86399; //phpcs:ignore
 
 			$args = array(
 				'post_type'      => 'shift',
@@ -818,7 +867,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 						array(
 							'taxonomy' => 'shift_type',
 							'field'    => 'slug',
-							'terms'    => $_POST['shift_type'],
+							'terms'    => sanitize_text_field( wp_unslash( $_POST['shift_type'] ) ),
 						);
 				}
 				if ( isset( $_POST['status'] ) && '' !== $_POST['status'] ) {
@@ -826,7 +875,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 						array(
 							'taxonomy' => 'shift_status',
 							'field'    => 'slug',
-							'terms'    => $_POST['status'],
+							'terms'    => sanitize_text_field( wp_unslash( $_POST['status'] ) ),
 						);
 				}
 				if ( isset( $_POST['location'] ) && '' !== $_POST['location'] ) {
@@ -834,13 +883,13 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 						array(
 							'taxonomy' => 'location',
 							'field'    => 'slug',
-							'terms'    => sanitize_text_field( $_POST['location'] ),
+							'terms'    => sanitize_text_field( wp_unslash( $_POST['location'] ) ),
 						);
 				}
 			}
 
 			if ( isset( $_POST['job'] ) && '' !== $_POST['job'] ) {
-				$job                     = get_page_by_path( $_POST['job'], '', 'job' );
+				$job                     = get_page_by_path( sanitize_text_field( wp_unslash( $_POST['job'] ) ), '', 'job' );
 				$args['connected_type']  = 'shifts_to_jobs';
 				$args['connected_items'] = $job->ID;
 			}
@@ -893,17 +942,14 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		 */
 		public function your_schedule_shortcode( $atts ) {
 
-			// Attributes.
-			extract(
-				shortcode_atts(
-					array(
-						'employee' => '',
-						'type'     => '',
-						'status'   => '',
-						'location' => '',
-					),
-					$atts
-				)
+			$args = shortcode_atts(
+				array(
+					'employee' => '',
+					'type'     => '',
+					'status'   => '',
+					'location' => '',
+				),
+				$atts
 			);
 
 			$calendar_options = $this->get_calendar_options();
@@ -919,14 +965,14 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 				return $this->show_login_form();
 			}
 
-			if ( '' == $employee ) {
-				$employee = get_current_user_id();
+			if ( '' == $args['employee'] ) {
+				$args['employee'] = get_current_user_id();
 			}
 
-			$data = 'data-type="' . $type . '"
-					data-status="' . $status . '"
-					data-location="' . $location . '"
-					data-employee="' . $employee . '"';
+			$data = 'data-type="' . $args['type'] . '"
+					data-status="' . $args['status'] . '"
+					data-location="' . $args['location'] . '"
+					data-employee="' . $args['employee'] . '"';
 
 			return $this->display_calendar( $data );
 
@@ -969,15 +1015,16 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 
 			$error = array();
 			// If profile was saved, update profile.
-			if ( ! empty( $_POST['action'] ) && 'update-user' == $_POST['action'] ) {
+			// phpcs:ignore
+			if ( ! empty( $_POST['action'] ) && 'update-user' === $_POST['action'] ) { // We aren't processing the form yet - we'll verify the nonce in save_user_profile().
 
 				$this->save_user_profile();
 
 				// Redirect so the page will show updated info.
-				if ( count( $error ) == 0 ) {
+				if ( count( $error ) === 0 ) {
 					// action hook for plugins and extra fields saving.
 					do_action( 'edit_user_profile_update', $current_user->ID );
-					wp_redirect( get_permalink() );
+					wp_safe_redirect( get_permalink() );
 					exit;
 				}
 			}
@@ -997,6 +1044,9 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		 * @since 2.0.0
 		 */
 		private function save_user_profile() {
+			if ( ! isset( $_POST['shiftee_update_user_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['shiftee_update_user_nonce'] ) ), 'shiftee_update_user' ) ) {
+				wp_die( esc_html__( 'Permission error.  Please go back and try again.', 'employee-scheduler' ) );
+			}
 
 			global $current_user;
 
@@ -1006,7 +1056,8 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 					wp_update_user(
 						array(
 							'ID'        => $current_user->ID,
-							'user_pass' => esc_attr( $_POST['pass1'] ),
+							// phpcs:ignore
+							'user_pass' => $_POST['pass1'], // Sanitizing a password will just confuse things.
 						)
 					);
 				} else {
@@ -1016,12 +1067,13 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 
 			/* Update user information. */
 			if ( ! empty( $_POST['url'] ) ) {
-				update_user_meta( $current_user->ID, 'user_url', esc_url( $_POST['url'] ) );
+				update_user_meta( $current_user->ID, 'user_url', esc_url_raw( wp_unslash( $_POST['url'] ) ) );
 			}
 			if ( ! empty( $_POST['email'] ) ) {
-				if ( ! is_email( esc_attr( $_POST['email'] ) ) ) {
+				$usable_email = sanitize_email( wp_unslash( $_POST['email'] ) );
+				if ( ! is_email( $usable_email ) ) {
 					$error[] = __( 'The Email you entered is not valid.  please try again.', 'profile' );
-				} elseif ( email_exists( esc_attr( $_POST['email'] ) ) != $current_user->id ) {
+				} elseif ( email_exists( $usable_email ) !== $current_user->id ) {
 					$error[] = __( 'This email is already used by another user.  try a different one.', 'profile' );
 				} else {
 					wp_update_user(
@@ -1125,13 +1177,14 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 
 			$message = '';
 
-			if ( isset( $_POST['shiftee-extra-work'] ) && 'Record Work' == ( $_POST['shiftee-extra-work'] ) ) {
+			// phpcs:ignore
+			if ( isset( $_POST['shiftee-extra-work'] ) && 'Record Work' === ( $_POST['shiftee-extra-work'] ) ) { // We're not processing this form, just checking if it's there.
 				$message = $this->save_extra_work();
 			}
 
 			ob_start();
 
-			echo esc_html( $message );
+			echo wp_kses_post( $message );
 
 			include 'partials/shortcode-extra-work.php';
 
@@ -1226,7 +1279,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		 * @return string
 		 */
 		private function save_extra_work() {
-			if ( ! isset( $_POST['shiftee_extra_work_nonce'] ) || wp_verify_nonce( sanitize_text_field( $_POST['shiftee_extra_work_nonce'] ), 'shiftee_extra_work' ) ) {
+			if ( ! isset( $_POST['shiftee_extra_work_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['shiftee_extra_work_nonce'] ) ), 'shiftee_extra_work' ) ) {
 				$message = '<p class="shiftee-failure">' . __( 'Permission Error', 'employee-scheduler' ) . '</p>';
 
 				return $message;
@@ -1243,6 +1296,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			$username  = $current_user->display_name;
 			$extrawork = array(
 				'post_type'   => 'shift',
+				// Translators: employee name.
 				'post_title'  => sprintf( __( 'Extra shift by %s', 'employee-scheduler' ), $username ),
 				'post_status' => 'publish',
 			);
@@ -1252,7 +1306,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			$extrashift = wp_insert_post( $extrawork );
 
 			// check whether admins need to approve extra shifts.
-			if ( '1' == $this->options['extra_shift_approval'] ) {
+			if ( '1' === $this->options['extra_shift_approval'] ) {
 				// mark the shift as pending approval.
 				wp_set_object_terms( $extrashift, 'pending-approval', 'shift_status' );
 
@@ -1272,6 +1326,8 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			}
 			wp_set_object_terms( $extrashift, 'worked', 'shift_status' );
 
+			// phpcs:disable
+			//  strtotime will sanitize these inputs.
 			if ( isset( $_POST['shiftee-start'] ) ) {
 				add_post_meta( $extrashift, '_shiftee_shift_start', strtotime( wp_unslash( $_POST['shiftee-start'] ) ) );
 				add_post_meta( $extrashift, '_shiftee_clock_in', strtotime( wp_unslash( $_POST['shiftee-start'] ) ) );
@@ -1281,6 +1337,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 				add_post_meta( $extrashift, '_shiftee_shift_end', strtotime( wp_unslash( $_POST['shiftee-end'] ) ) );
 				add_post_meta( $extrashift, '_shiftee_clock_out', strtotime( wp_unslash( $_POST['shiftee-end'] ) ) );
 			}
+			// phpcs:enable
 
 			add_post_meta( $extrashift, '_shiftee_scheduled_duration', $this->helper->get_shift_duration( $extrashift, 'scheduled', 'hours' ) );
 			add_post_meta( $extrashift, '_shiftee_worked_duration', $this->helper->get_shift_duration( $extrashift, 'worked', 'hours' ) );
@@ -1338,7 +1395,8 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 
 			$message = '';
 
-			if ( isset( $_POST['shiftee-expense-form'] ) && 'Record Expense' === ( $_POST['shiftee-expense-form'] ) ) {
+			// phpcs:ignore
+			if ( isset( $_POST['shiftee-expense-form'] ) && 'Record Expense' === ( $_POST['shiftee-expense-form'] ) ) { //  We aren't actually processing this form data, just checking if it exists.
 				$message = $this->add_expense();
 			}
 
@@ -1468,7 +1526,8 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			$new_expense = wp_insert_post( $this_expense );
 
 			if ( isset( $_POST['shiftee-expense-date'] ) ) {
-				add_post_meta( $new_expense, '_shiftee_date', strtotime( wp_unslash( $_POST['shiftee-expense-date'] ) ) );
+				// phpcs:ignore
+				add_post_meta( $new_expense, '_shiftee_date', strtotime( wp_unslash( $_POST['shiftee-expense-date'] ) ) );  // strtotime will sanitize this input.
 			}
 
 			if ( isset( $_POST['shiftee-expense-amount'] ) ) {
@@ -1486,10 +1545,21 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 					wp_die( esc_html__( 'Invalid file.  Please go back and try again.', 'employee-schedule-manager' ) );
 				}
 
+				$file_name     = sanitize_file_name( wp_unslash( $_FILES['shiftee-expense-receipt']['name'] ) );
+				$file_tmp_name = sanitize_file_name( wp_unslash( $_FILES['shiftee-expense-receipt']['tmp_name'] ) );
+
+				// make sure this is an image.
+				$allowed_types = array( IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_GIF );
+				$detected_type = exif_imagetype( $file_tmp_name );
+				$allowed       = in_array( $detected_type, $allowed_types );
+				if ( ! $allowed ) {
+					wp_die( esc_html__( 'Invalid file.  Please go back and try again.', 'employee-schedule-manager' ) );
+				}
+
 				$upload = wp_upload_bits(
-					$_FILES['shiftee-expense-receipt']['name'],
+					$file_name,
 					null,
-					file_get_contents( $_FILES['shiftee-expense-receipt']['tmp_name'] )
+					file_get_contents( $file_tmp_name )
 				);
 
 				$wp_filetype = wp_check_filetype( basename( $upload['file'] ), null );
@@ -1544,6 +1614,16 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			return $message;
 		}
 
+		/**
+		 * Leave forward-slashes in file names
+		 *
+		 * @param array $special_chars List of special characters that WordPress strips out by default.
+		 * @return array
+		 */
+		public function allow_slashes( $special_chars ) {
+			$new_special_chars = array_diff( $special_chars, array( '/' ) );
+			return $new_special_chars;
+		}
 
 	}
 

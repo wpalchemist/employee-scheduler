@@ -52,7 +52,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	<?php do_action( 'edit_user_profile', $current_user ); ?>
 	<p class='form-submit'>
 		<input name='updateuser' type='submit' id='updateuser' class='submit button' value='<?php _e( 'Update', 'employee-scheduler' ); ?>' />
-		<?php wp_nonce_field( 'update-user' ); ?>
+		<?php wp_nonce_field( 'shiftee_update_user', 'shiftee_update_user_nonce' ); ?>
 		<input name='action' type='hidden' id='action' value='update-user' />
 	</p><!-- .form-submit -->
 </form><!-- #adduser -->
