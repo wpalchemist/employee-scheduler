@@ -1,24 +1,23 @@
 <?php
-
 /**
  * Send HTML email.
  *
- * @link       http://ran.ge
+ * @link       https://morgan.wpalchemists.com
  * @since      2.0.0
  *
  * @package    Shiftee Basic
  * @subpackage Shiftee Basic/includes
  */
 
-/**
- * Send HTML email.
- *
- * @since      2.0.0
- * @package    Shiftee Basic
- * @subpackage Shiftee Basic/includes
- * @author     Range <support@shiftee.co>
- */
 if ( ! class_exists( 'Shiftee_Email' ) ) {
+	/**
+	 * Send HTML email.
+	 *
+	 * @since      2.0.0
+	 * @package    Shiftee Basic
+	 * @subpackage Shiftee Basic/includes
+	 * @author     Range <support@shiftee.co>
+	 */
 	class Shiftee_Email {
 
 		/**
@@ -78,7 +77,6 @@ if ( ! class_exists( 'Shiftee_Email' ) ) {
 		 *
 		 * @link URL
 		 *
-		 * @param string $from Name and email address for "from" header.
 		 * @param string $to Name and email address for "to" header.
 		 * @param string $cc Name and email address for "cc" header.
 		 * @param string $subject Subject of email.
@@ -86,7 +84,7 @@ if ( ! class_exists( 'Shiftee_Email' ) ) {
 		 *
 		 * @return bool True if email sent successfully.
 		 */
-		function send_email( $to, $cc, $subject, $message_text ) {
+		public function send_email( $to, $cc, $subject, $message_text ) {
 
 			/* translators: use this to change the character encoding in emails */
 			$charset = __( 'ISO-8859-1', 'employee-scheduler' );

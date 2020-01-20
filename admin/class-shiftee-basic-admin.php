@@ -1,26 +1,25 @@
 <?php
-
 /**
  * The admin-specific functionality of the plugin.
  *
- * @link       http://ran.ge
+ * @link       https://morgan.wpalchemists.com
  * @since      2.0.0
  *
  * @package    Shiftee Basic
  * @subpackage Shiftee Basic/admin
  */
 
-/**
- * The admin-specific functionality of the plugin.
- *
- * Defines the plugin name, version, and two examples hooks for how to
- * enqueue the admin-specific stylesheet and JavaScript.
- *
- * @package    Shiftee Basic
- * @subpackage Shiftee Basic/admin
- * @author     Range <support@shiftee.co>
- */
 if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
+	/**
+	 * The admin-specific functionality of the plugin.
+	 *
+	 * Defines the plugin name, version, and two examples hooks for how to
+	 * enqueue the admin-specific stylesheet and JavaScript.
+	 *
+	 * @package    Shiftee Basic
+	 * @subpackage Shiftee Basic/admin
+	 * @author     Range <support@shiftee.co>
+	 */
 	class Shiftee_Basic_Admin {
 
 		/**
@@ -85,13 +84,15 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 * Register the stylesheets for the admin area.
 		 *
 		 * @since    2.0.0
+		 *
+		 * @param string $hook  Page hook.
 		 */
 		public function enqueue_styles( $hook ) {
 
 			wp_enqueue_style( $this->plugin_name, SHIFTEE_BASIC_DIR_URL . 'admin/css/shiftee-admin.css', array(), $this->version, 'all' );
 
-			if ( 'shift_page_view-schedules' == $hook ) {
-				wp_enqueue_style( 'cmb2', SHIFTEE_BASIC_DIR_URL . 'libraries/cmb2/css/cmb2.min.css' );
+			if ( 'shift_page_view-schedules' === $hook ) {
+				wp_enqueue_style( 'cmb2', SHIFTEE_BASIC_DIR_URL . 'libraries/cmb2/css/cmb2.min.css', array(), $this->version );
 			}
 
 		}
@@ -101,14 +102,14 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 *
 		 * @since    2.0.0
 		 *
-		 * @param $hook  Page hook
+		 * @param string $hook  Page hook.
 		 */
 		public function enqueue_scripts( $hook ) {
 
 			global $post;
 
-			if ( 'shift_page_view-schedules' == $hook ) {
-				wp_enqueue_script( 'jquery-ui-datepicker', array( 'jquery' ) );
+			if ( 'shift_page_view-schedules' === $hook ) {
+				wp_enqueue_script( 'jquery-ui-datepicker', array( 'jquery' ) ); // phpcs:ignore
 				wp_enqueue_script(
 					$this->plugin_name,
 					SHIFTEE_BASIC_DIR_URL . 'admin/js/shiftee-basic-admin.js',
@@ -123,7 +124,7 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 				wp_localize_script( $this->plugin_name, 'datetimepicker_options', $datetimepicker_options );
 			}
 
-			if ( 'dashboard_page_shiftee-upgrades' == $hook ) {
+			if ( 'dashboard_page_shiftee-upgrades' === $hook ) {
 				wp_enqueue_script( $this->plugin_name, SHIFTEE_BASIC_DIR_URL . 'admin/js/shiftee-basic-admin.js', array( 'jquery' ), $this->version, false );
 				wp_localize_script( $this->plugin_name, 'shiftee_update_ajax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
 			}
@@ -175,7 +176,7 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 			);
 			register_taxonomy( 'shift_type', array( 'shift' ), $args );
 
-			// Create default types
+			// Create default types.
 			wp_insert_term(
 				__( 'Extra', 'employee-scheduler' ),
 				'shift_type',
@@ -268,8 +269,8 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 				)
 			);
 
-			// if admin must approve extra shifts, then we need a "pending approval" status and a "not approved" status
-			if ( isset( $this->options['extra_shift_approval'] ) && '1' == $this->options['extra_shift_approval'] ) {
+			// if admin must approve extra shifts, then we need a "pending approval" status and a "not approved" status.
+			if ( isset( $this->options['extra_shift_approval'] ) && '1' === $this->options['extra_shift_approval'] ) {
 				wp_insert_term(
 					__( 'Pending Approval', 'employee-scheduler' ),
 					'shift_status',
@@ -296,7 +297,7 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 *
 		 * @since 1.0.0
 		 */
-		function register_tax_location() {
+		public function register_tax_location() {
 
 			$labels = array(
 				'name'                       => _x( 'Locations', 'Taxonomy General Name', 'employee-scheduler' ),
@@ -345,7 +346,7 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 *
 		 * @since 1.0.0
 		 */
-		function register_tax_job_category() {
+		public function register_tax_job_category() {
 
 			$labels = array(
 				'name'                       => _x( 'Job Category', 'Taxonomy General Name', 'employee-scheduler' ),
@@ -433,8 +434,8 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 			register_taxonomy( 'expense_category', array( 'expense' ), $args );
 
 			wp_insert_term(
-				'Mileage', // the term
-				'expense_category', // the taxonomy
+				'Mileage', // the term.
+				'expense_category', // the taxonomy.
 				array(
 					'description' => 'Mileage to be reimbursed',
 					'slug'        => 'mileage',
@@ -442,8 +443,8 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 			);
 
 			wp_insert_term(
-				'Receipt', // the term
-				'expense_category', // the taxonomy
+				'Receipt', // the term.
+				'expense_category', // the taxonomy.
 				array(
 					'description' => 'Receipts to be reimbursed',
 					'slug'        => 'receipt',
@@ -498,8 +499,8 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 			register_taxonomy( 'expense_status', array( 'expense' ), $args );
 
 			wp_insert_term(
-				'Reimbursed', // the term
-				'expense_status', // the taxonomy
+				'Reimbursed', // the term.
+				'expense_status', // the taxonomy.
 				array(
 					'description' => 'Expenses for which employee has been reimbursed',
 					'slug'        => 'reimbursed',
@@ -513,7 +514,7 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 *
 		 * @since 1.0.0
 		 */
-		function register_cpt_shift() {
+		public function register_cpt_shift() {
 
 			$labels = array(
 				'name'               => _x( 'Shifts', 'Post Type General Name', 'employee-scheduler' ),
@@ -534,27 +535,26 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 			$labels = apply_filters( 'shiftee_filter_shift_labels', $labels );
 
 			$args = array(
-				'label'                               => __( 'shift', 'employee-scheduler' ),
-				'description'                         => __( 'Shifts you can assign to employees', 'employee-scheduler' ),
-				'labels'                              => $labels,
-				'supports'                            => array( 'title', 'editor' ),
-				'taxonomies'                          => array( 'shift_type' ),
-				'hierarchical'                        => true,
-				'public'                              => true,
-				'show_ui'                             => true,
-				'show_in_menu'                        => true,
-				'show_in_nav_menus'                   => false,
-				'show_in_admin_bar'                   => true,
-				'show_in_rest'                        => true,
-				'menu_position'                       => 70,
-				'menu_icon'                           => 'dashicons-calendar',
-				'can_export'                          => true,
-				'has_archive'                         => false,
-				'exclude_from_search'                 => true,
-				'publicly_queryable'                  => true,
-				// 'map_meta_cap'        => true,
-									'capability_type' => 'shift',
-				'capabilities'                        => array(
+				'label'               => __( 'shift', 'employee-scheduler' ),
+				'description'         => __( 'Shifts you can assign to employees', 'employee-scheduler' ),
+				'labels'              => $labels,
+				'supports'            => array( 'title', 'editor' ),
+				'taxonomies'          => array( 'shift_type' ),
+				'hierarchical'        => true,
+				'public'              => true,
+				'show_ui'             => true,
+				'show_in_menu'        => true,
+				'show_in_nav_menus'   => false,
+				'show_in_admin_bar'   => true,
+				'show_in_rest'        => true,
+				'menu_position'       => 70,
+				'menu_icon'           => 'dashicons-calendar',
+				'can_export'          => true,
+				'has_archive'         => false,
+				'exclude_from_search' => true,
+				'publicly_queryable'  => true,
+				'capability_type'     => 'shift',
+				'capabilities'        => array(
 					'publish_posts'      => 'publish_shifts',
 					'edit_posts'         => 'edit_shifts',
 					'edit_others_posts'  => 'edit_others_shifts',
@@ -595,26 +595,25 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 			$labels = apply_filters( 'shiftee_filter_job_labels', $labels );
 
 			$args = array(
-				'label'                               => __( 'job', 'employee-scheduler' ),
-				'description'                         => __( 'jobs', 'employee-scheduler' ),
-				'labels'                              => $labels,
-				'supports'                            => array( 'title', 'editor', 'thumbnail', 'revisions' ),
-				'taxonomies'                          => array( 'job_category' ),
-				'hierarchical'                        => false,
-				'public'                              => true,
-				'show_ui'                             => true,
-				'show_in_menu'                        => true,
-				'show_in_nav_menus'                   => false,
-				'show_in_admin_bar'                   => false,
-				'show_in_rest'                        => true,
-				'menu_position'                       => 70,
-				'menu_icon'                           => 'dashicons-hammer',
-				'can_export'                          => true,
-				'has_archive'                         => false,
-				'exclude_from_search'                 => true,
-				'publicly_queryable'                  => true,
-				// 'map_meta_cap'        => true,
-									'capability_type' => 'shift',
+				'label'               => __( 'job', 'employee-scheduler' ),
+				'description'         => __( 'jobs', 'employee-scheduler' ),
+				'labels'              => $labels,
+				'supports'            => array( 'title', 'editor', 'thumbnail', 'revisions' ),
+				'taxonomies'          => array( 'job_category' ),
+				'hierarchical'        => false,
+				'public'              => true,
+				'show_ui'             => true,
+				'show_in_menu'        => true,
+				'show_in_nav_menus'   => false,
+				'show_in_admin_bar'   => false,
+				'show_in_rest'        => true,
+				'menu_position'       => 70,
+				'menu_icon'           => 'dashicons-hammer',
+				'can_export'          => true,
+				'has_archive'         => false,
+				'exclude_from_search' => true,
+				'publicly_queryable'  => true,
+				'capability_type'     => 'shift',
 			);
 			register_post_type( 'job', $args );
 
@@ -646,26 +645,25 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 			$labels = apply_filters( 'shiftee_filter_expense_labels', $labels );
 
 			$args = array(
-				'label'                               => __( 'expense', 'employee-scheduler' ),
-				'description'                         => __( 'Expenses submitted by staff', 'employee-scheduler' ),
-				'labels'                              => $labels,
-				'supports'                            => array( 'title', 'editor', 'thumbnail' ),
-				'taxonomies'                          => array( 'expense_category' ),
-				'hierarchical'                        => false,
-				'public'                              => false,
-				'show_ui'                             => true,
-				'show_in_menu'                        => true,
-				'show_in_nav_menus'                   => false,
-				'show_in_admin_bar'                   => false,
-				'show_in_rest'                        => true,
-				'menu_position'                       => 70,
-				'menu_icon'                           => 'dashicons-chart-area',
-				'can_export'                          => true,
-				'has_archive'                         => false,
-				'exclude_from_search'                 => true,
-				'publicly_queryable'                  => false,
-				// 'map_meta_cap'        => true,
-									'capability_type' => 'shift',
+				'label'               => __( 'expense', 'employee-scheduler' ),
+				'description'         => __( 'Expenses submitted by staff', 'employee-scheduler' ),
+				'labels'              => $labels,
+				'supports'            => array( 'title', 'editor', 'thumbnail' ),
+				'taxonomies'          => array( 'expense_category' ),
+				'hierarchical'        => false,
+				'public'              => false,
+				'show_ui'             => true,
+				'show_in_menu'        => true,
+				'show_in_nav_menus'   => false,
+				'show_in_admin_bar'   => false,
+				'show_in_rest'        => true,
+				'menu_position'       => 70,
+				'menu_icon'           => 'dashicons-chart-area',
+				'can_export'          => true,
+				'has_archive'         => false,
+				'exclude_from_search' => true,
+				'publicly_queryable'  => false,
+				'capability_type'     => 'shift',
 			);
 			register_post_type( 'expense', $args );
 
@@ -709,15 +707,15 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 				$user      = get_current_user_id();
 				$dismissed = get_user_meta( $user, $current_announcement, true );
 
-				// user has seen this already, so don't show it
-				if ( 'dismissed' == $dismissed ) {
+				// user has seen this already, so don't show it.
+				if ( 'dismissed' === $dismissed ) {
 					return;
 				}
 
-				// save user meta so we know this user has viewed this page
+				// save user meta so we know this user has viewed this page.
 				add_user_meta( $user, $current_announcement, 'dismissed' );
 
-				wp_redirect( admin_url( '/admin.php?page=about-shiftee' ) );
+				wp_safe_redirect( admin_url( '/admin.php?page=about-shiftee' ) );
 				exit;
 
 			}
@@ -752,7 +750,8 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 				<p>
 					<?php
 					printf(
-						__( 'Employee Scheduler Pro is now Shiftee Basic!  Employee Scheduler Pro has been deactivated because it is not compatible with Shiftee Basic.  Please <a href="%s">upgrade to Shiftee</a>.', 'employee-scheduler' ),
+						// Translators: URL where users can go to upgrade to Shiftee Pro.
+						esc_html__( 'Employee Scheduler Pro is now Shiftee Basic!  Employee Scheduler Pro has been deactivated because it is not compatible with Shiftee Basic.  Please <a href="%s">upgrade to Shiftee</a>.', 'employee-scheduler' ),
 						'https://shiftee.co/upgrade'
 					);
 					?>
@@ -771,11 +770,11 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 *
 		 * @link http://wordpress.mfields.org/2010/set-default-terms-for-your-custom-taxonomies-in-wordpress-3-0/
 		 *
-		 * @param int $post_id ID of the post being saved
-		 * @param int $post ID of post object
+		 * @param int $post_id ID of the post being saved.
+		 * @param int $post ID of post object.
 		 */
 		public function default_shift_status( $post_id, $post ) {
-			if ( 'publish' === $post->post_status && 'shift' == $post->post_type ) {
+			if ( 'publish' === $post->post_status && 'shift' === $post->post_type ) {
 
 				if ( ! $this->helper->get_shift_connection( $post_id, 'employee' ) ) {
 					$defaults = array(
@@ -801,7 +800,7 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param $user
+		 * @param int $user User id.
 		 */
 		public function employee_profile_fields( $user ) {
 			include SHIFTEE_BASIC_DIR . '/admin/partials/user-profile.php';
@@ -812,30 +811,33 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param $user_id
+		 * @param int $user_id ID of the user.
 		 *
 		 * @return bool
 		 */
 		public function save_employee_profile_fields( $user_id ) {
+			if ( ! isset( $_POST['_wpnonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), 'update-user_' . $user_id ) ) {
+				exit( 'Permission error.' );
+			}
 
 			if ( ! current_user_can( 'edit_user', $user_id ) ) {
 				return false;
 			}
 
 			if ( isset( $_POST['address'] ) ) {
-				update_user_meta( $user_id, 'address', sanitize_text_field( $_POST['address'] ) );
+				update_user_meta( $user_id, 'address', sanitize_text_field( wp_unslash( $_POST['address'] ) ) );
 			}
 			if ( isset( $_POST['city'] ) ) {
-				update_user_meta( $user_id, 'city', sanitize_text_field( $_POST['city'] ) );
+				update_user_meta( $user_id, 'city', sanitize_text_field( wp_unslash( $_POST['city'] ) ) );
 			}
 			if ( isset( $_POST['state'] ) ) {
-				update_user_meta( $user_id, 'state', sanitize_text_field( $_POST['state'] ) );
+				update_user_meta( $user_id, 'state', sanitize_text_field( wp_unslash( $_POST['state'] ) ) );
 			}
 			if ( isset( $_POST['zip'] ) ) {
-				update_user_meta( $user_id, 'zip', sanitize_text_field( $_POST['zip'] ) );
+				update_user_meta( $user_id, 'zip', sanitize_text_field( wp_unslash( $_POST['zip'] ) ) );
 			}
 			if ( isset( $_POST['phone'] ) ) {
-				update_user_meta( $user_id, 'phone', sanitize_text_field( $_POST['phone'] ) );
+				update_user_meta( $user_id, 'phone', sanitize_text_field( wp_unslash( $_POST['phone'] ) ) );
 			}
 
 			do_action( 'shiftee_save_additional_user_profile_fields', $user_id );
@@ -850,7 +852,7 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		public function define_metaboxes() {
 			$prefix = '_shiftee_';
 
-			// Shift Details Metabox
+			// Shift Details Metabox.
 			$shift_meta = new_cmb2_box(
 				array(
 					'id'           => 'shift_metabox',
@@ -942,7 +944,7 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 				)
 			);
 
-			// add group field for breaks
+			// add group field for breaks.
 			$breaks = $shift_meta->add_field(
 				array(
 					'id'          => $prefix . 'breaks',
@@ -1037,7 +1039,7 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 				)
 			);
 
-			// Shift Notes metabox
+			// Shift Notes metabox.
 			$shift_notes = new_cmb2_box(
 				array(
 					'id'           => 'shift_notes',
@@ -1090,7 +1092,7 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 				)
 			);
 
-			// Expense Details Metabox
+			// Expense Details Metabox.
 			$expense_meta = new_cmb2_box(
 				array(
 					'id'           => 'expense_metabox',
@@ -1131,8 +1133,8 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 *
 		 * @since 2.1.0
 		 *
-		 * @param $field_args
-		 * @param $field
+		 * @param array $field_args CMB2 field attributes.
+		 * @param array $field CMB2 field.
 		 *
 		 * @return string
 		 */
@@ -1148,8 +1150,8 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 *
 		 * @since 2.1.2
 		 *
-		 * @param $field_args
-		 * @param $field
+		 * @param array $field_args CMB2 field attributes.
+		 * @param array $field CMB2 field.
 		 *
 		 * @return float|int|mixed
 		 */
@@ -1167,8 +1169,8 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 *
 		 * @since 2.1.2
 		 *
-		 * @param $field_args
-		 * @param $field
+		 * @param array $field_args CMB2 field attributes.
+		 * @param array $field CMB2 field.
 		 *
 		 * @return float|int|mixed
 		 */
@@ -1184,8 +1186,8 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		/**
 		 * Calculate the scheduled duration of a shift and save it to a hidden meta field.
 		 *
-		 * @param $field_args
-		 * @param $field
+		 * @param array $field_args CMB2 field attributes.
+		 * @param array $field CMB2 field.
 		 *
 		 * @return string
 		 */
@@ -1200,8 +1202,8 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		/**
 		 * Display the shift's scheduled duration
 		 *
-		 * @param $field_args
-		 * @param $field
+		 * @param array $field_args CMB2 field attributes.
+		 * @param array $field CMB2 field.
 		 */
 		public function display_scheduled_duration( $field_args, $field ) {
 			// @todo - make JS to update this dynamically
@@ -1209,7 +1211,12 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 			$scheduled = get_post_meta( $shift_id, '_shiftee_scheduled_duration', true );
 			if ( $scheduled && '' !== $scheduled ) {
 				?>
-				<p><?php printf( __( 'Scheduled duration: %s hours', 'employee-scheduler' ), $scheduled ); ?></p>
+				<p>
+					<?php
+					// Translators: Number of hours.
+					printf( esc_html__( 'Scheduled duration: %s hours', 'employee-scheduler' ), esc_html( $scheduled ) );
+					?>
+				</p>
 				<?php
 			}
 		}
@@ -1217,8 +1224,8 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		/**
 		 * Display the shift's worked duration
 		 *
-		 * @param $field_args
-		 * @param $field
+		 * @param array $field_args CMB2 field attributes.
+		 * @param array $field CMB2 field.
 		 */
 		public function display_worked_duration( $field_args, $field ) {
 			// @todo - make JS to update this dynamically
@@ -1226,7 +1233,12 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 			$worked   = get_post_meta( $shift_id, '_shiftee_worked_duration', true );
 			if ( $worked && '' !== $worked ) {
 				?>
-				<p><?php printf( __( 'Worked duration: %s hours', 'employee-scheduler' ), $worked ); ?></p>
+				<p>
+					<?php
+					// Translators: number of hours.
+					printf( esc_html__( 'Worked duration: %s hours', 'employee-scheduler' ), esc_html( $worked ) );
+					?>
+				</p>
 				<?php
 			}
 		}
@@ -1239,7 +1251,7 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 * @return bool
 		 */
 		public function are_we_tracking_breaks() {
-			if ( '1' == $this->options['track_breaks'] ) {
+			if ( '1' === $this->options['track_breaks'] ) {
 				return true;
 			} else {
 				return false;
@@ -1251,10 +1263,10 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 *
 		 * @since 2.1.0
 		 *
-		 * @param $field_args
-		 * @param $field
+		 * @param array $field_args CMB2 field attributes.
+		 * @param array $field CMB2 field.
 		 *
-		 * @return mixed|void
+		 * @return mixed
 		 */
 		public function calculate_wage( $field_args, $field ) {
 			$shift_id = $field['render_row_cb'][0]->data_to_save['post_ID'];
@@ -1266,7 +1278,7 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		/**
 		 * Filter CMB2's date and time picker options to use user's settings
 		 *
-		 * @param $l10n
+		 * @param array $l10n Internationalization options.
 		 *
 		 * @return mixed
 		 */
@@ -1322,15 +1334,13 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param array defaults Default columns.
+		 * @param array $defaults Default columns.
 		 *
 		 * @return array column list.
 		 */
 		public function shift_overview_columns_headers( $defaults ) {
 			$defaults['scheduled'] = __( 'Scheduled For', 'employee-scheduler' );
-
 			return $defaults;
-
 		}
 
 		/**
@@ -1338,16 +1348,13 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 *
 		 * @since 2.1.1
 		 *
-		 * @param $sortable_columns
+		 * @param array $sortable_columns The list of sortable coluimns.
 		 *
 		 * @return mixed
 		 */
 		public function shift_sortable_columns( $sortable_columns ) {
-
 			$sortable_columns['scheduled'] = 'scheduled';
-
 			return $sortable_columns;
-
 		}
 
 		/**
@@ -1355,23 +1362,19 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 *
 		 * @since 2.1.1
 		 *
-		 * @param $query
+		 * @param object $query The WP_Query object.
 		 */
 		public function order_shifts_by_date( $query ) {
-
-			if ( $query->is_main_query() && ( $orderby = $query->get( 'orderby' ) ) ) {
-
+			$orderby = $query->get( 'orderby' );
+			if ( $query->is_main_query() && $orderby ) {
 				switch ( $orderby ) {
-
 					case 'scheduled':
 						$query->set( 'meta_key', '_shiftee_shift_start' );
 						$query->set( 'orderby', 'meta_value' );
 
 						break;
-
 				}
 			}
-
 		}
 
 		/**
@@ -1383,13 +1386,13 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 *
 		 * @global object $shift_metabox .
 		 *
-		 * @param string  Column name.
-		 * @param int  Post ID.
+		 * @param string $column_name  Column name.
+		 * @param int    $post_ID  Post ID.
 		 */
 		public function shift_overview_columns( $column_name, $post_ID ) {
 
-			if ( 'scheduled' == $column_name ) {
-				echo $this->helper->show_shift_date_and_time( $post_ID );
+			if ( 'scheduled' === $column_name ) {
+				echo esc_html( $this->helper->show_shift_date_and_time( $post_ID ) );
 			}
 		}
 
@@ -1422,7 +1425,7 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 * @see notify_employee()
 		 * @link http://wordpress.stackexchange.com/questions/116221/how-to-force-function-to-run-as-the-last-one-when-saving-the-post
 		 *
-		 * @param string @filter
+		 * @param string $filter The filter we're using.
 		 *
 		 * @return int Priority that will run last.
 		 */
@@ -1459,21 +1462,21 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 */
 		public function notify_employee( $post_id = null ) {
 
-			if ( null == $post_id ) {
+			if ( null === $post_id ) {
 				return;
 			}
 
-			if ( is_admin() && 'trash' !== get_post_status( $post_id ) ) { // we only need to run this function if we're in the dashboard
+			if ( is_admin() && 'trash' !== get_post_status( $post_id ) ) { // we only need to run this function if we're in the dashboard.
 
-				if ( 'on' == get_post_meta( $post_id, '_shiftee_notify_employee', true ) ) {  // only send the email if the "notify employee" option is checked
+				if ( 'on' === get_post_meta( $post_id, '_shiftee_notify_employee', true ) ) {  // only send the email if the "notify employee" option is checked.
 
-					// get the employee id
+					// get the employee id.
 					$employeeid = $this->helper->get_shift_connection( $post_id, 'employee', 'ID' );
 
-					// send the email
+					// send the email.
 					if ( ! isset( $employeeid ) ) {
 						$error = __( 'We could not send a notification, because you did not select a staff member.  Click your back button and select a staff member for this shift, or uncheck the staff notification option.', 'employee-scheduler' );
-						wp_die( $error );
+						wp_die( esc_html( $error ) );
 					}
 					if ( isset( $employeeid ) ) {
 						do_action( 'shiftee_notify_employee_about_shift', $post_id, $employeeid );
@@ -1489,8 +1492,8 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 *
 		 * @since 1.0
 		 *
-		 * @param int $employeeid ID of the employee who will receive notification.
 		 * @param int $postid The ID of the shift.
+		 * @param int $employeeid ID of the employee who will receive notification.
 		 */
 		public function send_notification_email( $postid, $employeeid ) {
 			$options = $this->helper->shiftee_options();
@@ -1541,12 +1544,12 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 *
 		 * @since 2.0.0
 		 *
-		 * @param $shift
-		 * @param $note
+		 * @param int    $shift The ID of the shift.
+		 * @param string $note The text of the note left by the employee.
 		 */
 		public function employee_note_admin_notification( $shift, $note ) {
 
-			if ( isset( $this->options['admin_notify_note'] ) && 1 == $this->options['admin_notify_note'] ) {
+			if ( isset( $this->options['admin_notify_note'] ) && 1 === $this->options['admin_notify_note'] ) {
 				if ( isset( $this->options['admin_notification_email'] ) ) {
 					$to = sanitize_email( $this->options['admin_notification_email'] );
 				} else {
@@ -1573,10 +1576,10 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 *
 		 * @since 2.1.2
 		 *
-		 * @param $shift
+		 * @param int $shift The ID of the shift.
 		 */
 		public function clock_in_notification( $shift ) {
-			if ( '1' == $this->options['admin_notify_clockin'] ) {
+			if ( '1' === $this->options['admin_notify_clockin'] ) {
 
 				$employee_id = $this->helper->get_shift_connection( $shift->ID, 'employee' );
 				$cc          = apply_filters( 'shiftee_admin_notification_cc', $employee_id );
@@ -1592,8 +1595,10 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 				$employee_name = $this->helper->get_shift_connection( $shift->ID, 'employee', 'name' );
 				$clock_in_time = get_post_meta( $shift->ID, '_shiftee_clock_in', true );
 
+				// Translators: the name of the employee.
 				$subject = sprintf( __( '%s has just clocked in', 'employee-scheduler' ), $employee_name );
 
+				// Translators: the name of the employee.
 				$message  = '<p>' . sprintf( __( '%s has just clocked in', 'employee-scheduler' ), $employee_name ) . '</p>';
 				$message .= '<p><strong>' . __( 'Scheduled hours', 'employee-scheduler' ) . ': </strong>' . esc_html( $this->helper->show_shift_date_and_time( $shift->ID, 'scheduled' ) ) . '</p>';
 				$message .= '<p><strong>' . __( 'Clock in time', 'employee-scheduler' ) . ': </strong>' . esc_html( $this->helper->display_datetime( $clock_in_time ) ) . '</p>';
@@ -1608,10 +1613,10 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		/**
 		 * Email admin when employee clocks out
 		 *
-		 * @param $shift
+		 * @param int $shift ID of the shift.
 		 */
 		public function clock_out_notification( $shift ) {
-			if ( '1' == $this->options['admin_notify_clockout'] ) {
+			if ( '1' === $this->options['admin_notify_clockout'] ) {
 
 				$employee_id = $this->helper->get_shift_connection( $shift->ID, 'employee' );
 				$cc          = apply_filters( 'shiftee_admin_notification_cc', $employee_id );
@@ -1624,8 +1629,10 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 
 				$employee_name = $this->helper->get_shift_connection( $shift->ID, 'employee', 'name' );
 
+				// Translators: the name of the employee.
 				$subject = sprintf( __( '%s has just clocked out', 'employee-scheduler' ), $employee_name );
 
+				// Translators: the name of the employee.
 				$message  = '<p>' . sprintf( __( '%s has just clocked out', 'employee-scheduler' ), $employee_name ) . '</p>';
 				$message .= '<p><strong>' . __( 'Scheduled hours', 'employee-scheduler' ) . ': </strong>' . esc_html( $this->helper->show_shift_date_and_time( $shift->ID, 'scheduled' ) ) . '</p>';
 				$message .= '<p><strong>' . __( 'Worked hours', 'employee-scheduler' ) . ': </strong>' . esc_html( $this->helper->show_shift_date_and_time( $shift->ID, 'worked' ) ) . '</p>';
@@ -1642,7 +1649,7 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 *
 		 * @since 2.1.0
 		 *
-		 * @param $shift
+		 * @param int $shift ID of the shift.
 		 */
 		public function calculate_wage_on_clock_out( $shift ) {
 
@@ -1657,7 +1664,7 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		 *
 		 * @since 2.1.0
 		 *
-		 * @param $shift
+		 * @param int $shift ID of the shift.
 		 */
 		public function calculate_duration_on_clock_out( $shift ) {
 
@@ -1683,27 +1690,29 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		/**
 		 * When employee saves extra shift, notify admin.
 		 *
-		 * @param $shift_id
-		 * @param $employee
+		 * @param int    $shift_id The id of the shift that was just created.
+		 * @param  object $employee The employee who just created the shift.
 		 */
 		public function notify_admin_extra_shift( $shift_id, $employee ) {
-			if ( isset( $this->options['extra_shift_approval'] ) && '1' == $this->options['extra_shift_approval'] ) {
+			if ( isset( $this->options['extra_shift_approval'] ) && '1' === $this->options['extra_shift_approval'] ) {
 
 				$to = $this->options['admin_notification_email'];
 
 				$cc = apply_filters( 'shiftee_admin_notification_cc', $employee->ID );
 
-				$subject = sprintf( __( 'Extra shift by %s is pending your approval', 'employee-scheduler' ), esc_attr( $employee->display_name ) );
-				$message = '
-			<p>' . __( 'There is a new extra shift awaiting your approval', 'employee-scheduler' ) . '</p>
-			<p><strong>' . __( 'Shift details' ) . '</strong>
+				// Translators: the name of the employee.
+				$subject     = sprintf( esc_html__( 'Extra shift by %s is pending your approval', 'employee-scheduler' ), esc_attr( $employee->display_name ) );
+				$message     = '
+			<p>' . esc_html__( 'There is a new extra shift awaiting your approval', 'employee-scheduler' ) . '</p>
+			<p><strong>' . esc_html__( 'Shift details' ) . '</strong>
 				<ul>
-					<li><strong>' . __( 'Staff:', 'employee-scheduler' ) . '</strong> ' . esc_attr( $employee->display_name ) . '</li>
-					<li><strong>' . __( 'Date:', 'employee-scheduler' ) . '</strong> ' . esc_html( $this->helper->show_shift_date_and_time( $shift_id, 'worked' ) ) . '</li>
-					<li><strong>' . __( 'Duration:', 'employee-scheduler' ) . '</strong> ' . esc_html( get_post_meta( $shift_id, '_shiftee_worked_duration', true ) ) . '</li>';
-				if ( isset( $_POST['description'] ) && '' !== $_POST['description'] ) {
+					<li><strong>' . esc_html__( 'Staff:', 'employee-scheduler' ) . '</strong> ' . esc_attr( $employee->display_name ) . '</li>
+					<li><strong>' . esc_html__( 'Date:', 'employee-scheduler' ) . '</strong> ' . esc_html( $this->helper->show_shift_date_and_time( $shift_id, 'worked' ) ) . '</li>
+					<li><strong>' . esc_html__( 'Duration:', 'employee-scheduler' ) . '</strong> ' . esc_html( get_post_meta( $shift_id, '_shiftee_worked_duration', true ) ) . '</li>';
+				$description = get_the_content( $shift_id );
+				if ( isset( $description ) && '' !== $description ) {
 					$message .= '
-						<li><strong>' . __( 'Description:', 'employee-scheduler' ) . '</strong> ' . sanitize_text_field( $_POST['description'] ) . '</li>
+						<li><strong>' . esc_html__( 'Description:', 'employee-scheduler' ) . '</strong> ' . wp_kses_post( $description ) . '</li>
 						';
 				}
 				$message .=
@@ -1727,38 +1736,32 @@ if ( ! class_exists( 'Shiftee_Basic_Admin' ) ) {
 		public function show_sidebar() {
 			?>
 			<aside id="shiftee-admin-sidebar">
-				<img src="<?php echo plugin_dir_url( __FILE__ ); ?>partials/images/logo.png">
+				<img src="<?php echo esc_url( plugin_dir_url( __FILE__ ) ); ?>partials/images/logo.png">
 				<?php
 				ob_start();
 				include SHIFTEE_BASIC_DIR . '/admin/partials/sidebar.php';
 
-				echo apply_filters( 'shiftee_admin_sidebar', ob_get_clean() );
+				echo wp_kses_post( apply_filters( 'shiftee_admin_sidebar', ob_get_clean() ) );
 				?>
 
-				<h3><?php _e( 'Need customization?', 'employee-scheduler' ); ?></h3>
+				<h3><?php esc_html_e( 'Need customization?', 'employee-scheduler' ); ?></h3>
 
-				<p><?php _e( 'If Shiftee doesn\'t do exactly what you need, our developers are on hand to customize it just for you!  Just let us know what you need!', 'employee-scheduler' ); ?></p>
+				<p><?php esc_html_e( 'If Shiftee doesn\'t do exactly what you need, our developers are on hand to customize it just for you!  Just let us know what you need!', 'employee-scheduler' ); ?></p>
 
-				<a class="button button-primary"
-				   href="https://shiftee.co/downloads/custom-development/?utm_source=plugin-admin-sidebar"><?php _e( 'Purchase Custom Development', 'employee-scheduler' ); ?></a>
+				<a class="button button-primary" href="https://shiftee.co/downloads/custom-development/?utm_source=plugin-admin-sidebar"><?php esc_html_e( 'Purchase Custom Development', 'employee-scheduler' ); ?></a>
 
 				<!-- Begin MailChimp Signup Form -->
 				<div id="mc_embed_signup">
-					<h3><?php _e( 'Stay in the loop!', 'employee-scheduler' ); ?></h3>
-					<p><?php _e( 'Sign up for our mailing list to be the first to know about new features and add-ons. We’ll even send you a few discounts!', 'employee-scheduler' ); ?></p>
-					<form action="//shiftee.us14.list-manage.com/subscribe/post?u=55314f9528b163798058954ef&amp;id=976bd42bdd"
-						  method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form"
-						  class="validate" target="_blank" novalidate>
+					<h3><?php esc_html_e( 'Stay in the loop!', 'employee-scheduler' ); ?></h3>
+					<p><?php esc_html_e( 'Sign up for our mailing list to be the first to know about new features and add-ons. We’ll even send you a few discounts!', 'employee-scheduler' ); ?></p>
+					<form action="//shiftee.us14.list-manage.com/subscribe/post?u=55314f9528b163798058954ef&amp;id=976bd42bdd" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
 						<div id="mc_embed_signup_scroll">
 							<label for="mce-EMAIL">Subscribe to our mailing list</label>
-							<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL"
-								   placeholder="email address" required>
-							<div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text"
-																									  name="b_55314f9528b163798058954ef_976bd42bdd"
-																									  tabindex="-1"
-																									  value=""></div>
-							<div class="clear"><p><input type="submit" value="Subscribe" name="subscribe"
-														 id="mc-embedded-subscribe" class="button"></p></div>
+							<input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+							<div style="position: absolute; left: -5000px;" aria-hidden="true">
+								<input type="text" name="b_55314f9528b163798058954ef_976bd42bdd" tabindex="-1" value="">
+							</div>
+							<div class="clear"><p><input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button"></p></div>
 						</div>
 					</form>
 				</div>

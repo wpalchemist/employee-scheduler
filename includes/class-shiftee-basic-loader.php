@@ -1,28 +1,26 @@
 <?php
-
 /**
  * Register all actions and filters for the plugin
  *
- * @link       http://ran.ge
+ * @link       https://morgan.wpalchemists.com
  * @since      2.0.0
  *
  * @package    Shiftee Basic
  * @subpackage Shiftee Basic/includes
  */
 
-/**
- * Register all actions and filters for the plugin.
- *
- * Maintain a list of all hooks that are registered throughout
- * the plugin, and register them with the WordPress API. Call the
- * run function to execute the list of actions and filters.
- *
- * @package    Shiftee Basic
- * @subpackage Shiftee Basic/includes
- * @author     Range <support@shiftee.co>
- */
-
 if ( ! class_exists( 'Shiftee_Basic_Loader' ) ) {
+	/**
+	 * Register all actions and filters for the plugin.
+	 *
+	 * Maintain a list of all hooks that are registered throughout
+	 * the plugin, and register them with the WordPress API. Call the
+	 * run function to execute the list of actions and filters.
+	 *
+	 * @package    Shiftee Basic
+	 * @subpackage Shiftee Basic/includes
+	 * @author     Range <support@shiftee.co>
+	 */
 	class Shiftee_Basic_Loader {
 
 		/**
@@ -79,7 +77,7 @@ if ( ! class_exists( 'Shiftee_Basic_Loader' ) ) {
 		 * @param    object $component A reference to the instance of the object on which the filter is defined.
 		 * @param    string $callback The name of the function definition on the $component.
 		 * @param    int    $priority Optional. he priority at which the function should be fired. Default is 10.
-		 * @param    int    $accepted_args Optional. The number of arguments that should be passed to the $callback. Default is 1
+		 * @param    int    $accepted_args Optional. The number of arguments that should be passed to the $callback. Default is 1.
 		 */
 		public function add_filter( $hook, $component, $callback, $priority = 10, $accepted_args = 1 ) {
 			$this->filters = $this->add( $this->filters, $hook, $component, $callback, $priority, $accepted_args );

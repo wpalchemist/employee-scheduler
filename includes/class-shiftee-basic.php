@@ -1,33 +1,32 @@
 <?php
-
 /**
  * The file that defines the core plugin class
  *
  * A class definition that includes attributes and functions used across both the
  * public-facing side of the site and the admin area.
  *
- * @link       http://ran.ge
+ * @link       https://morgan.wpalchemists.com
  * @since      2.0.0
  *
  * @package    Shiftee Basic
  * @subpackage Shiftee Basic/includes
  */
 
-/**
- * The core plugin class.
- *
- * This is used to define internationalization, admin-specific hooks, and
- * public-facing site hooks.
- *
- * Also maintains the unique identifier of this plugin as well as the current
- * version of the plugin.
- *
- * @since      2.0.0
- * @package    Shiftee Basic
- * @subpackage Shiftee Basic/includes
- * @author     Range <support@shiftee.co>
- */
 if ( ! class_exists( 'Shiftee_Basic' ) ) {
+	/**
+	 * The core plugin class.
+	 *
+	 * This is used to define internationalization, admin-specific hooks, and
+	 * public-facing site hooks.
+	 *
+	 * Also maintains the unique identifier of this plugin as well as the current
+	 * version of the plugin.
+	 *
+	 * @since      2.0.0
+	 * @package    Shiftee Basic
+	 * @subpackage Shiftee Basic/includes
+	 * @author     Range <support@shiftee.co>
+	 */
 	class Shiftee_Basic {
 
 		/**
@@ -156,7 +155,7 @@ if ( ! class_exists( 'Shiftee_Basic' ) ) {
 		 */
 		private function set_locale() {
 
-			$plugin_i18n = new Shiftee_Basic_i18n();
+			$plugin_i18n = new Shiftee_Basic_I18n();
 
 			$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 

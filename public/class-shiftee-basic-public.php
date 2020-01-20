@@ -2,7 +2,7 @@
 /**
  * The public-facing functionality of the plugin.
  *
- * @link       http://ran.ge
+ * @link       https://morgan.wpalchemists.com
  * @since      2.0.0
  *
  * @package    Shiftee Basic
@@ -122,7 +122,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			);
 
 			if ( isset( $this->options['geolocation'] ) && 1 === $this->options['geolocation'] && is_singular( 'shift' ) ) {
-				wp_enqueue_script( 'geolocation', SHIFTEE_BASIC_DIR_URL . 'public/js/geolocation.js', $this->version, true );
+				wp_enqueue_script( 'geolocation', SHIFTEE_BASIC_DIR_URL . 'public/js/geolocation.js', '', $this->version, true );
 			}
 
 			wp_register_script( 'moment', SHIFTEE_BASIC_DIR_URL . 'libraries/fullcalendar/lib/moment.min.js', array( 'jquery' ), $this->version, false );
@@ -302,8 +302,6 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		 * If the shift date is today, and if the current user is assigned to the shift and has not clocked in, show the clock in form
 		 *
 		 * @param int $shift ID of the shift we're updating.
-		 *
-		 * @return string HTML clock-in form
 		 */
 		public function maybe_clock_in( $shift ) {
 
@@ -313,15 +311,11 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			$start_date = get_post_meta( $shift, '_shiftee_shift_start', true );
 			$end_date   = get_post_meta( $shift, '_shiftee_shift_end', true );
 
-			if ( $assigned_employee == $current_user->ID // employee assigned to the shift is viewing the shift.
-				 && ( current_time( 'Ymd' ) === gmdate( 'Ymd', $start_date ) || current_time( 'Ymd' ) === gmdate( 'Ymd', $end_date ) ) // shift is scheduled for today.
-				 && '' === get_post_meta( $shift, '_shiftee_clock_in', true ) // employee has not clocked in already.
+			if ( $assigned_employee === $current_user->ID // employee assigned to the shift is viewing the shift.
+				&& ( current_time( 'Ymd' ) === gmdate( 'Ymd', $start_date ) || current_time( 'Ymd' ) === gmdate( 'Ymd', $end_date ) ) // shift is scheduled for today.
+				&& '' === get_post_meta( $shift, '_shiftee_clock_in', true ) // employee has not clocked in already.
 			) {
-				ob_start();
 				include 'partials/clock-in.php';
-
-				return ob_get_clean();
-
 			}
 		}
 
@@ -348,7 +342,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			}
 
 			// save clock in time.
-			update_post_meta( $shift->ID, '_shiftee_clock_in', current_time( 'timestamp' ) );
+			update_post_meta( $shift->ID, '_shiftee_clock_in', current_time( 'timestamp' ) ); // phpcs:ignore
 
 			$testing_meta = get_post_meta( $shift->ID, '_shiftee_clock_in', true );
 			if ( ! isset( $testing_meta ) || '' === $testing_meta ) {
@@ -389,7 +383,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			} else {
 				$body = wp_remote_retrieve_body( $response );
 				$json = json_decode( $body );
-				if ( isset( $json->status ) && 'OK' == $json->status ) {
+				if ( isset( $json->status ) && 'OK' === $json->status ) {
 					$address = $json->results[0]->formatted_address;
 
 					return $address;
@@ -408,8 +402,6 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		 * If the shift date is today, and the current user is assigned to the shift and has already clocked in, show the clock out button.
 		 *
 		 * @param int $shift The shift we're updating.
-		 *
-		 * @return string HTML clock-out form
 		 */
 		public function maybe_clock_out( $shift ) {
 
@@ -419,16 +411,12 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			$start_date = get_post_meta( $shift, '_shiftee_shift_start', true );
 			$end_date   = get_post_meta( $shift, '_shiftee_shift_end', true );
 
-			if ( $assigned_employee == $current_user->ID // employee assigned to the shift is viewing the shift.
-				 && ( current_time( 'Ymd' ) === gmdate( 'Ymd', $start_date ) || current_time( 'Ymd' ) === gmdate( 'Ymd', $end_date ) ) // shift is scheduled for today.
-				 && '' !== get_post_meta( $shift, '_shiftee_clock_in', true ) // employee clocked in already.
-				 && '' == get_post_meta( $shift, '_shiftee_clock_out', true ) // employee has not clocked out.
+			if ( $assigned_employee === $current_user->ID // employee assigned to the shift is viewing the shift.
+				&& ( current_time( 'Ymd' ) === gmdate( 'Ymd', $start_date ) || current_time( 'Ymd' ) === gmdate( 'Ymd', $end_date ) ) // shift is scheduled for today.
+				&& '' !== get_post_meta( $shift, '_shiftee_clock_in', true ) // employee clocked in already.
+				&& '' === get_post_meta( $shift, '_shiftee_clock_out', true ) // employee has not clocked out.
 			) {
-				ob_start();
 				include 'partials/clock-out.php';
-
-				return ob_get_clean();
-
 			}
 
 		}
@@ -457,7 +445,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			}
 
 			// save clock out time.
-			update_post_meta( $shift->ID, '_shiftee_clock_out', current_time( 'timestamp' ) );
+			update_post_meta( $shift->ID, '_shiftee_clock_out', current_time( 'timestamp' ) ); // phpcs:ignore
 
 			$testing_meta = get_post_meta( $shift->ID, '_shiftee_clock_out', true );
 			if ( ! isset( $testing_meta ) || '' === $testing_meta ) {
@@ -495,23 +483,29 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			$current_user = wp_get_current_user();
 			$roles        = $current_user->roles;
 			if ( is_array( $roles ) && ! empty( $roles ) ) {
-				if ( in_array( 'shiftee_customer', $roles ) ) {
+				if ( in_array( 'shiftee_customer', $roles, true ) ) {
 					return;
 				}
 			}
 
 			$notes = get_post_meta( get_the_id(), '_shiftee_shift_notes', true );
 			if ( isset( $notes ) && is_array( $notes ) ) {
-				$notes_display = '<p><strong>' . __( 'Notes', 'employee-scheduler' ) . '</strong><ul>';
-				foreach ( $notes as $note ) {
-					if ( isset( $note['notedate'] ) && isset( $note['notetext'] ) ) {
-						$notes_display .= '<li><strong>' . $this->helper->display_datetime( $note['notedate'], 'date' ) . ':</strong> ' . sanitize_text_field( $note['notetext'] ) . '</li>';
+				?>
+				<p>
+					<strong><?php esc_html_e( 'Notes', 'employee-scheduler' ); ?></strong>
+					<ul>
+					<?php
+					foreach ( $notes as $note ) {
+						if ( isset( $note['notedate'] ) && isset( $note['notetext'] ) ) {
+							?>
+							<li><strong><?php echo esc_html( $this->helper->display_datetime( $note['notedate'], 'date' ) ); ?>:</strong>&nbsp;<?php echo esc_html( $note['notetext'] ); ?></li>
+							<?php
+						}
 					}
-				}
-
-				$notes_display .= '</ul></p>';
-
-				return $notes_display;
+					?>
+					</ul>
+				</p>
+				<?php
 			}
 
 		}
@@ -846,7 +840,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			$args = array(
 				'post_type'      => 'shift',
 				'posts_per_page' => -1,
-				'meta_query'     => array(
+				'meta_query'     => array( // phpcs:ignore
 					'key'     => '_shiftee_shift_start',
 					'value'   => array( $start, $end ),
 					'type'    => 'numeric',
@@ -855,11 +849,12 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			);
 
 			if ( ( isset( $_POST['shift_type'] ) && '' !== $_POST['shift_type'] ) ||
-				 ( isset( $_POST['status'] ) && '' !== $_POST['status'] ) ||
-				 ( isset( $_POST['location'] ) && '' !== $_POST['location'] )
+				( isset( $_POST['status'] ) && '' !== $_POST['status'] ) ||
+				( isset( $_POST['location'] ) && '' !== $_POST['location'] )
 			) {
 
-				$args['tax_query'] = array(
+				// phpcs:ignore
+				$args['tax_query'] = array( // Sorry, phpcs, but we need a tax_query here.
 					'relation' => 'AND',
 				);
 				if ( isset( $_POST['shift_type'] ) && '' !== $_POST['shift_type'] ) {
@@ -965,7 +960,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 				return $this->show_login_form();
 			}
 
-			if ( '' == $args['employee'] ) {
+			if ( '' === $args['employee'] ) {
 				$args['employee'] = get_current_user_id();
 			}
 
@@ -1033,9 +1028,6 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			include 'partials/shortcode-employee-profile.php';
 
 			return ob_get_clean();
-
-			return $profile;
-
 		}
 
 		/**
@@ -1052,7 +1044,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 
 			/* Update user password. */
 			if ( ! empty( $_POST['pass1'] ) && ! empty( $_POST['pass2'] ) ) {
-				if ( $_POST['pass1'] == $_POST['pass2'] ) {
+				if ( $_POST['pass1'] === $_POST['pass2'] ) {
 					wp_update_user(
 						array(
 							'ID'        => $current_user->ID,
@@ -1129,14 +1121,14 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			}
 
 			$viewer = wp_get_current_user();
-			$now    = current_time( 'timestamp' );
+			$now    = current_time( 'timestamp' ); // phpcs:ignore
 			$args   = array(
 				'post_type'       => 'shift',
 				'posts_per_page'  => - 1,
 				'order'           => 'DESC',
-				'meta_key'        => '_shiftee_shift_start',
+				'meta_key'        => '_shiftee_shift_start', // phpcs:ignore
 				'orderby'         => 'meta-value',
-				'meta_query'      => array(
+				'meta_query'      => array( // phpcs:ignore
 					$this->helper->date_meta_query( current_time( $now, false ) ),
 				),
 				'connected_type'  => 'shifts_to_employees',
@@ -1150,9 +1142,6 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 			include 'partials/shortcode-today.php';
 
 			return apply_filters( 'shiftee_today_shortcode', ob_get_clean() );
-
-			wp_reset_postdata();
-
 		}
 
 		/**
@@ -1195,7 +1184,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 		/**
 		 * If the "Extra" shift type has children, display a drop-down menu of those children.
 		 *
-		 * @return string|void
+		 * @return string
 		 */
 		public function extra_type_dropdown() {
 
@@ -1217,8 +1206,6 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 
 				return $extra_dropdown;
 			}
-
-			return;
 		}
 
 		/**
@@ -1551,7 +1538,7 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 				// make sure this is an image.
 				$allowed_types = array( IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_GIF );
 				$detected_type = exif_imagetype( $file_tmp_name );
-				$allowed       = in_array( $detected_type, $allowed_types );
+				$allowed       = in_array( $detected_type, $allowed_types, true );
 				if ( ! $allowed ) {
 					wp_die( esc_html__( 'Invalid file.  Please go back and try again.', 'employee-schedule-manager' ) );
 				}
@@ -1559,7 +1546,8 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 				$upload = wp_upload_bits(
 					$file_name,
 					null,
-					file_get_contents( $file_tmp_name )
+					// phpcs:ignore
+					file_get_contents( $file_tmp_name ) // this isn't a remote file, so we don't want to use wp_remote_get().
 				);
 
 				$wp_filetype = wp_check_filetype( basename( $upload['file'] ), null );
@@ -1616,6 +1604,8 @@ if ( ! class_exists( 'Shiftee_Basic_Public' ) ) {
 
 		/**
 		 * Leave forward-slashes in file names
+		 *
+		 * @since 2.3.0
 		 *
 		 * @param array $special_chars List of special characters that WordPress strips out by default.
 		 * @return array

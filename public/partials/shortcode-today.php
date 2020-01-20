@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Today
  *
  * Display today's shifts to logged-in employee.
  *
- * @link       http://ran.ge
+ * @link       https://morgan.wpalchemists.com
  * @since      2.0.0
  *
  * @package    Shiftee Basic
@@ -14,7 +13,10 @@
 
 if ( $todayquery->have_posts() ) { ?>
 	<p>
-		<?php printf( __( 'You have %s shift(s) scheduled today.  Which would you like to view?', 'employee-scheduler' ), $todayquery->found_posts ); ?>
+		<?php
+		// Translators: Number of shifts.
+		printf( esc_html__( 'You have %s shift(s) scheduled today.  Which would you like to view?', 'employee-scheduler' ), esc_html( $todayquery->found_posts ) );
+		?>
 		<ul>
 		<?php
 		while ( $todayquery->have_posts() ) :
@@ -22,10 +24,10 @@ if ( $todayquery->have_posts() ) { ?>
 			?>
 			<li>
 				<a href="<?php the_permalink(); ?>">
-					<?php echo $this->helper->show_shift_date_and_time( get_the_id() ); ?>
+					<?php echo esc_html( $this->helper->show_shift_date_and_time( get_the_id() ) ); ?>
 					<?php
 					if ( $this->helper->get_shift_connection( get_the_id(), 'job' ) ) {
-						echo '&ndash;&nbsp;' . $this->helper->get_shift_connection( get_the_id(), 'job', 'name' );
+						echo '&ndash;&nbsp;' . esc_html( $this->helper->get_shift_connection( get_the_id(), 'job', 'name' ) );
 					}
 					?>
 				</a>
@@ -34,5 +36,5 @@ if ( $todayquery->have_posts() ) { ?>
 		</ul>
 	</p>
 <?php } else { ?>
-	<p><?php _e( 'You do not have any shifts scheduled today.', 'employee-scheduler' ); ?></p>
+	<p><?php esc_html_e( 'You do not have any shifts scheduled today.', 'employee-scheduler' ); ?></p>
 <?php } ?>

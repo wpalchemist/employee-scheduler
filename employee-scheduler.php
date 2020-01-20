@@ -1,7 +1,8 @@
 <?php
-
 /**
- * @link              http://ran.ge
+ * Employee Scheduler: employee shift management plugin for WordPress
+ *
+ * @link              https://morgan.wpalchemists.com
  * @since             2.0.0
  * @package           Shiftee Basic
  *
@@ -9,15 +10,14 @@
  * Plugin Name:       Shiftee Basic
  * Plugin URI:        https://shiftee.co
  * Description:       Complete staff schedule management system: create and display schedule, let employees clock in and out, report expenses.
- * Version:           2.2.2
- * Author:            Range
- * Author URI:        http://ran.ge
+ * Version:           2.3.0
+ * Author:            Morgan Kay
+ * Author URI:        https://morgan.wpalchemists.com
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       employee-scheduler
  * Domain Path:       /languages
  */
-
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
@@ -72,8 +72,6 @@ run_shiftee_basic();
  *
  * @since 1.0
  */
-add_action( 'admin_init', 'shiftee_p2p_check' );
-
 function shiftee_p2p_check() {
 	if ( ! is_plugin_active( 'posts-to-posts/posts-to-posts.php' ) ) {
 		if ( ! class_exists( 'P2P_Autoload' ) ) {
@@ -87,7 +85,7 @@ function shiftee_p2p_check() {
 		}
 	}
 }
-
+add_action( 'admin_init', 'shiftee_p2p_check' );
 
 /**
  * Load P2P.
@@ -101,7 +99,6 @@ function shiftee_p2p_check() {
  */
 function shiftee_p2p_load() {
 	if ( ! class_exists( 'P2P_Autoload' ) ) {
-		// load_plugin_textdomain( P2P_TEXTDOMAIN, '', basename( dirname( __FILE__ ) ) . '/languages' );
 		if ( ! function_exists( 'p2p_register_connection_type' ) ) {
 			require_once SHIFTEE_BASIC_DIR . '/libraries/wpp2p/autoload.php';
 		}
@@ -149,7 +146,6 @@ function shiftee_load_admin() {
  * @link https://github.com/scribu/wp-posts-to-posts/blob/master/posts-to-posts.php
  */
 function shiftee_p2p_init() {
-	// Safe hook for calling p2p_register_connection_type()
 	do_action( 'p2p_init' );
 }
 
@@ -167,10 +163,8 @@ add_action( 'wp_loaded', 'shiftee_p2p_init' );
  * @see WPP2P
  * @link https://github.com/scribu/wp-posts-to-posts/blob/master/posts-to-posts.php
  */
-add_action( 'p2p_init', 'shiftee_create_connections' );
-
 function shiftee_create_connections() {
-	// create the connection between shifts and employees (users)
+	// create the connection between shifts and employees (users).
 	p2p_register_connection_type(
 		array(
 			'name'         => 'shifts_to_employees',
@@ -189,7 +183,7 @@ function shiftee_create_connections() {
 			),
 		)
 	);
-	// create the connection between expenses and employees (users)
+	// create the connection between expenses and employees (users).
 	p2p_register_connection_type(
 		array(
 			'name'         => 'expenses_to_employees',
@@ -208,7 +202,7 @@ function shiftee_create_connections() {
 			),
 		)
 	);
-	// create the connection between shifts and jobs
+	// create the connection between shifts and jobs.
 	p2p_register_connection_type(
 		array(
 			'name'         => 'shifts_to_jobs',
@@ -229,7 +223,7 @@ function shiftee_create_connections() {
 		)
 	);
 
-	// create the connection between expenses and jobs
+	// create the connection between expenses and jobs.
 	p2p_register_connection_type(
 		array(
 			'name'         => 'expenses_to_jobs',
@@ -246,3 +240,4 @@ function shiftee_create_connections() {
 		)
 	);
 }
+add_action( 'p2p_init', 'shiftee_create_connections' );

@@ -1,30 +1,29 @@
 <?php
-
 /**
  * Functions and variables used throughout the plugin and its add-ons.
  *
- * @link       http://ran.ge
+ * @link       https://morgan.wpalchemists.com
  * @since      2.0.0
  *
  * @package    Shiftee Basic
  * @subpackage Shiftee Basic/includes
  */
 
-/**
- * Functions and variables used throughout the plugin and its add-ons.
- *
- * @since      2.0.0
- * @package    Shiftee Basic
- * @subpackage Shiftee Basic/includes
- * @author     Range <support@shiftee.co>
- */
 if ( ! class_exists( 'Shiftee_Helper' ) ) {
+	/**
+	 * Functions and variables used throughout the plugin and its add-ons.
+	 *
+	 * @since      2.0.0
+	 * @package    Shiftee Basic
+	 * @subpackage Shiftee Basic/includes
+	 * @author     Range <support@shiftee.co>
+	 */
 	class Shiftee_Helper {
 
 		/**
 		 * Retrieve the plugin options, with default options
 		 *
-		 * This includes defaults for Shiftee Basic and Shiftee
+		 * This includes defaults for Shiftee Basic and Shiftee.
 		 *
 		 * @since   2.0.0
 		 * @return  array
@@ -83,8 +82,8 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		 *
 		 * @link http://docs.appthemes.com/tutorials/wordpress-check-user-role-function/
 		 *
-		 * @param string  Name of user role.
-		 * @param int  ID of user
+		 * @param string $role Name of user role.
+		 * @param int    $user_id ID of user.
 		 *
 		 * @return bool True if user has role, false if not.
 		 */
@@ -100,7 +99,7 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 				return false;
 			}
 
-			return in_array( $role, (array) $user->roles );
+			return in_array( $role, (array) $user->roles, true );
 		}
 
 		/**
@@ -108,15 +107,15 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		 *
 		 * @since 2.0.0
 		 *
-		 * @param $shift_id
-		 * @param $connected_item
-		 * @param string         $return
+		 * @param int    $shift_id ID of the shift.
+		 * @param int    $connected_item ID of the connected item.
+		 * @param string $return Whether to return an ID, name, or email.
 		 *
 		 * @return bool|false|int
 		 */
 		public function get_shift_connection( $shift_id, $connected_item, $return = 'ID' ) {
 
-			if ( 'employee' == $connected_item ) {
+			if ( 'employee' === $connected_item ) {
 				$users = get_users(
 					array(
 						'connected_type'  => 'shifts_to_employees',
@@ -127,15 +126,15 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 					return false;
 				}
 				foreach ( $users as $user ) {
-					if ( 'ID' == $return ) {
+					if ( 'ID' === $return ) {
 						return $user->ID;
-					} elseif ( 'name' == $return ) {
+					} elseif ( 'name' === $return ) {
 						return $user->display_name;
-					} elseif ( 'email' == $return ) {
+					} elseif ( 'email' === $return ) {
 						return $user->user_email;
 					}
 				}
-			} elseif ( 'job' == $connected_item ) {
+			} elseif ( 'job' === $connected_item ) {
 				$jobs = get_posts(
 					array(
 						'connected_type'  => 'shifts_to_jobs',
@@ -144,11 +143,11 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 				);
 				if ( ! empty( $jobs ) ) {
 					foreach ( $jobs as $job ) {
-						if ( 'ID' == $return ) {
+						if ( 'ID' === $return ) {
 							return $job->ID;
-						} elseif ( 'name' == $return ) {
+						} elseif ( 'name' === $return ) {
 							return $job->post_title;
-						} elseif ( 'object' == $return ) {
+						} elseif ( 'object' === $return ) {
 							return $job;
 						}
 					}
@@ -165,14 +164,14 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		 *
 		 * @since 2.0.0
 		 *
-		 * @param $shift_id
-		 * @param $time_type 'scheduled' or 'worked'
+		 * @param int    $shift_id ID of the shift.
+		 * @param string $time_type 'scheduled' or 'worked'.
 		 *
 		 * @return string
 		 */
 		public function show_shift_date_and_time( $shift_id, $time_type = 'scheduled' ) {
 
-			if ( 'scheduled' == $time_type ) {
+			if ( 'scheduled' === $time_type ) {
 				$start = get_post_meta( $shift_id, '_shiftee_shift_start', true );
 				$end   = get_post_meta( $shift_id, '_shiftee_shift_end', true );
 			} else {
@@ -180,11 +179,11 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 				$end   = get_post_meta( $shift_id, '_shiftee_clock_out', true );
 			}
 
-			if ( '' == $start || '' == $end ) {
+			if ( '' === $start || '' === $end ) {
 				return;
 			}
 
-			if ( date( 'd/m/Y', $start ) == date( 'd/m/Y', $end ) ) {
+			if ( gmdate( 'd/m/Y', $start ) === gmdate( 'd/m/Y', $end ) ) {
 				$datetime = $this->display_datetime( $start ) . ' - ' . $this->display_datetime( $end, 'time' );
 			} else {
 				$datetime = $this->display_datetime( $start ) . ' - ' . $this->display_datetime( $end );
@@ -198,8 +197,8 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		 *
 		 * @since 2.1.0
 		 *
-		 * @param $timestamp
-		 * @param string    $return
+		 * @param int    $timestamp The timestamp to format.
+		 * @param string $return Whether to return the date, time, or both.
 		 *
 		 * @return false|string
 		 */
@@ -207,44 +206,52 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 
 			$options = $this->shiftee_options();
 
-			if ( 'date' == $return ) {
+			if ( 'date' === $return ) {
 				$format = $options['date_format'];
-			} elseif ( 'time' == $return ) {
+			} elseif ( 'time' === $return ) {
 				$format = $options['time_format'];
 			} else {
 				$format = $options['date_format'] . ', ' . $options['time_format'];
 			}
 
-			return date( $format, $timestamp );
+			return gmdate( $format, $timestamp );
 		}
 
+		/**
+		 * Convert a day of the week to a number
+		 *
+		 * @return int
+		 */
 		public function numerical_first_day_of_week() {
 
 			$options = $this->shiftee_options();
 
+			$number = '';
+
 			switch ( $options['week_starts_on'] ) {
 				case 'Sunday':
-					return 0;
+					$number = 0;
 					break;
 				case 'Monday':
-					return 1;
+					$number = 1;
 					break;
 				case 'Tuesday':
-					return 2;
+					$number = 2;
 					break;
 				case 'Wednesday':
-					return 3;
+					$number = 3;
 					break;
 				case 'Thursday':
-					return 4;
+					$number = 4;
 					break;
 				case 'Friday':
-					return 5;
+					$number = 5;
 					break;
 				case 'Saturday':
-					return 6;
+					$number = 6;
 					break;
 			}
+			return $number;
 
 		}
 
@@ -253,26 +260,26 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		 *
 		 * @see http://stackoverflow.com/questions/8724710/php-datetimediff-results-comparison
 		 *
-		 * @param $a
-		 * @param $b
+		 * @param string $a A time interval.
+		 * @param string $b Another time interval.
 		 *
 		 * @return int
 		 */
 		public function time_interval_compare( $a, $b ) {
 
 			foreach ( $a as $key => $value ) {
-				// after seconds 's' comes 'invert' and other stuff we do not care about
-				// and it means that the date intervals are the same
-				if ( $key == 'invert' ) {
+				// after seconds 's' comes 'invert' and other stuff we do not care about.
+				// and it means that the date intervals are the same.
+				if ( 'invert' === $key ) {
 					return 0;
 				}
 
-				// when the values are the same we can move on
-				if ( $a->$key == $b->$key ) {
+				// when the values are the same we can move on.
+				if ( $a->$key === $b->$key ) {
 					continue;
 				}
 
-				// finally a level where we see a difference, return accordingly
+				// finally a level where we see a difference, return accordingly.
 				if ( $a->$key < $b->$key ) {
 					return '+ ';
 				} else {
@@ -286,24 +293,24 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		 *
 		 * @since 2.1.0
 		 *
-		 * @param $shift_id
-		 * @param $scheduled
+		 * @param int    $shift_id ID of the shift.
+		 * @param string $scheduled 'scheduled' or 'worked'.
 		 *
 		 * @return float|void
 		 */
 		public function get_shift_duration( $shift_id, $scheduled ) {
 
-			if ( 'scheduled' == $scheduled ) {
+			if ( 'scheduled' === $scheduled ) {
 				$start = get_post_meta( $shift_id, '_shiftee_shift_start', true );
 				$stop  = get_post_meta( $shift_id, '_shiftee_shift_end', true );
-			} elseif ( 'worked' == $scheduled ) {
+			} elseif ( 'worked' === $scheduled ) {
 				$start = get_post_meta( $shift_id, '_shiftee_clock_in', true );
 				$stop  = get_post_meta( $shift_id, '_shiftee_clock_out', true );
 
-				// check whether we need to subtract break time
+				// check whether we need to subtract break time.
 				$options = $this->shiftee_options();
-				if ( '1' == $options['track_breaks'] ) {
-					// get the total break time
+				if ( '1' === $options['track_breaks'] ) {
+					// get the total break time.
 					$breaks       = get_post_meta( $shift_id, '_shiftee_breaks', true );
 					$total_breaks = 0;
 					if ( isset( $breaks ) && is_array( $breaks ) && ! empty( $breaks ) ) {
@@ -315,12 +322,12 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 						}
 						$total_breaks = array_sum( $break_times );
 					}
-					// subtract it from the stop time
+					// subtract it from the stop time.
 					$stop = $stop - $total_breaks;
 				}
 			}
 
-			if ( ! isset( $start ) || '' == $start || ! isset( $stop ) || '' == $stop ) {
+			if ( ! isset( $start ) || '' === $start || ! isset( $stop ) || '' === $stop ) {
 				return;
 			}
 
@@ -336,14 +343,14 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		 *
 		 * @since 2.1.2
 		 *
-		 * @param $shift
-		 * @param $type
+		 * @param int $shift ID of the shift.
+		 * @param int $type Whether this is an overtime (ot) or regular )reg) shift.
 		 *
 		 * @return float|int|mixed
 		 */
 		public function get_shift_reg_vs_ot_hours( $shift, $type ) {
 			$options = $this->shiftee_options();
-			if ( 'scheduled' == $options['calculate'] ) {
+			if ( 'scheduled' === $options['calculate'] ) {
 				$hours = get_post_meta( $shift, '_shiftee_scheduled_duration', true );
 			} else {
 				$hours = get_post_meta( $shift, '_shiftee_worked_duration', true );
@@ -352,7 +359,7 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 			$employee = $this->get_shift_connection( $shift, 'employee', 'ID' );
 
 			$ot_limit = floatval( get_user_meta( $employee, 'shift_hours', true ) );
-			if ( '' == $ot_limit ) {
+			if ( '' === $ot_limit ) {
 				$ot_limit = $options['shift_hours'];
 			}
 
@@ -364,11 +371,11 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 				$ot_hours  = 0;
 			}
 
-			if ( 'ot' == $type ) {
+			if ( 'ot' === $type ) {
 				return $ot_hours;
 			}
 
-			if ( 'reg' == $type ) {
+			if ( 'reg' === $type ) {
 				return $reg_hours;
 			}
 		}
@@ -378,7 +385,7 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		 *
 		 * @since 2.1.0
 		 *
-		 * @param $shift_id
+		 * @param int $shift_id ID of the shift.
 		 *
 		 * @return mixed|void
 		 */
@@ -386,37 +393,37 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 			$options        = $this->shiftee_options();
 			$wage_templates = $options['wage_templates'];
 
-			// get staff member
+			// get staff member.
 			$staff = $this->get_shift_connection( $shift_id, 'employee', 'ID' );
 			if ( ! $staff ) {
 				return;
 			}
 
-			// get the staff member's wage grid
+			// get the staff member's wage grid.
 			$user_wage_template = get_user_meta( $staff, 'wage_template', true );
 			if ( is_array( $user_wage_template ) && is_array( $wage_templates ) ) {
 				foreach ( $wage_templates as $template ) {
-					if ( $template['template_name'] == $user_wage_template['template_name'] ) {
+					if ( $template['template_name'] === $user_wage_template['template_name'] ) {
 						$wage_grid = $template;
 					}
 				}
 				if ( ! isset( $wage_grid ) ) {
-					// staff is not using a wage grid from settings, so get their custom grid
+					// staff is not using a wage grid from settings, so get their custom grid.
 					$wage_grid = get_user_meta( $staff, 'wage_grid', true );
 				}
 			}
 
-			if ( ! isset( $wage_grid ) || '' == $wage_grid || ! is_array( $wage_grid ) || empty( $wage_grid ) && is_array( $wage_templates ) ) {
-				// staff doesn't have a wage grid, so get the first one from settings
+			if ( ( ! isset( $wage_grid ) || '' === $wage_grid || ! is_array( $wage_grid ) || empty( $wage_grid ) ) && is_array( $wage_templates ) ) {
+				// staff doesn't have a wage grid, so get the first one from settings.
 				$wage_grid = $wage_templates[0];
 			}
 
-			if ( '' == $wage_grid || ! is_array( $wage_grid ) || empty( $wage_grid ) ) {
-				// even after all that, we can't find a wage grid, so let's bail
+			if ( ! isset( $wage_grid ) || '' === $wage_grid || ! is_array( $wage_grid ) || empty( $wage_grid ) ) {
+				// even after all that, we can't find a wage grid, so let's bail.
 				return;
 			}
 
-			// get the shift location
+			// get the shift location.
 			$locations = get_the_terms( $shift_id, 'location' );
 			if ( $locations && ! is_wp_error( $locations ) ) {
 				foreach ( $locations as $location ) {
@@ -426,19 +433,19 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 				$location_id = 0;
 			}
 
-			// get the shift job
+			// get the shift job.
 			$job = $this->get_shift_connection( $shift_id, 'job', 'ID' );
 			if ( ! $job ) {
 				$job = 0;
 			}
 
-			// find the right wage on the grid
+			// find the right wage on the grid.
 			if ( isset( $wage_grid['regular'][ $location_id ]['jobs'][ $job ]['wage'] ) ) {
 				$wage = $wage_grid['regular'][ $location_id ]['jobs'][ $job ]['wage'];
 			}
-			if ( ! isset( $wage ) || '' == $wage ) {
+			if ( ! isset( $wage ) || '' === $wage ) {
 				$wage = $wage_grid['default'];
-				if ( ! isset( $wage ) || '' == $wage ) {
+				if ( ! isset( $wage ) || '' === $wage ) {
 					return;
 				}
 			}
@@ -450,19 +457,19 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		/**
 		 * Calculate how much a staff member gets paid for a shift
 		 *
-		 * @param $shift
+		 * @param int $shift ID of the shift.
 		 *
 		 * @return float
 		 */
 		public function calculate_shift_payment( $shift ) {
 
 			$pay_rate = get_post_meta( $shift, '_shiftee_wage', true );
-			if ( '' == $pay_rate ) {
+			if ( '' === $pay_rate ) {
 				$pay_rate = $this->calculate_shift_wage( $shift );
 			}
 
 			$options = $this->shiftee_options();
-			if ( 'scheduled' == $options['calculate'] ) {
+			if ( 'scheduled' === $options['calculate'] ) {
 				$hours = get_post_meta( $shift, '_shiftee_scheduled_duration', true );
 			} else {
 				$hours = get_post_meta( $shift, '_shiftee_worked_duration', true );
@@ -478,22 +485,22 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		 *
 		 * @since 2.1.2
 		 *
-		 * @param string $employee
-		 * @param string $template
+		 * @param string $employee ID of the employee.
+		 * @param string $template Wage template to use.
 		 *
 		 * @return array
 		 */
 		public function create_wage_grid( $employee = '', $template = '' ) {
 
 			if ( '' !== $employee ) {
-				// get the employee's wage settings
+				// get the employee's wage settings.
 				$user_wage_template = get_user_meta( $employee, 'wage_template', true );
 				if ( '' !== $user_wage_template ) {
 					$options   = $this->shiftee_options();
 					$templates = $options['wage_templates'];
 					if ( is_array( $templates ) && ! empty( $templates ) ) {
 						foreach ( $templates as $wages ) {
-							if ( isset( $wages['template_name'] ) && $wages['template_name'] == $user_wage_template ) {
+							if ( isset( $wages['template_name'] ) && $wages['template_name'] === $user_wage_template ) {
 								$existing = $wages;
 							}
 						}
@@ -505,7 +512,7 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 				$existing = $template;
 			}
 
-			// build the wage grid
+			// build the wage grid.
 			$wages = array(
 				'template_name' => '',
 				'regular'       => array(),
@@ -526,7 +533,7 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 				}
 			}
 
-			// get all the jobs
+			// get all the jobs.
 			$args = array(
 				'posts_per_page' => -1,
 				'orderby'        => 'title',
@@ -535,7 +542,7 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 			);
 			$jobs = get_posts( $args );
 
-			// get all the locations and add them to the grid
+			// get all the locations and add them to the grid.
 			$locations = get_terms( 'location', 'hide_empty=0&orderby=name' );
 			if ( is_array( $locations ) && ! empty( $locations ) ) {
 				foreach ( $locations as $location ) {
@@ -581,9 +588,9 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		 *
 		 * @since 2.1.2
 		 *
-		 * @param string $employee
-		 * @param string $template
-		 * @param $form
+		 * @param string $employee ID of the employee.
+		 * @param string $template Wage template to use.
+		 * @param string $form Name of the form to display.
 		 *
 		 * @return string
 		 */
@@ -591,8 +598,8 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 
 			$grid = $this->create_wage_grid( $employee, $template );
 
-			if ( 'options' == $form ) {
-				if ( '' == $template ) {
+			if ( 'options' === $form ) {
+				if ( '' === $template ) {
 					$template_name = 'new';
 				} else {
 					$template_name = $grid['template_name'];
@@ -600,13 +607,13 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 				$name = 'wpaesm_options[wage_templates][' . $template_name . ']';
 			}
 
-			if ( 'profile' == $form ) {
+			if ( 'profile' === $form ) {
 				$name = 'wage_grid';
 			}
 
 			$disabled = '';
 
-			if ( 'profile' == $form ) {
+			if ( 'profile' === $form ) {
 				if ( '' !== $grid['template_name'] && 'staff_custom_wage_grid' !== $grid['template_name'] ) {
 					$disabled = ' disabled';
 				}
@@ -627,8 +634,8 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		/**
 		 * Build meta_query args to search for shifts by date
 		 *
-		 * @param $timestamp
-		 * @param $offset bool whether or not we need to offset the timezone
+		 * @param int  $timestamp The date to build the query around.
+		 * @param bool $offset Whether or not we need to offset the timezone.
 		 *
 		 * @return array
 		 */
@@ -658,8 +665,8 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		 *
 		 * @since 2.0.0
 		 *
-		 * @param $a
-		 * @param $b
+		 * @param string $a value to alphabetize.
+		 * @param string $b value to alphabetize.
 		 *
 		 * @return int
 		 */
@@ -673,8 +680,8 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		 *
 		 * @since 2.0.0
 		 *
-		 * @param string $extra_roles
-		 * @param bool   $echo true to echo, false to return
+		 * @param string $extra_roles Extra roles to allow besides the default ones.
+		 * @param bool   $echo true to echo, false to return.
 		 *
 		 * @return bool
 		 */
@@ -704,7 +711,7 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 				}
 			}
 
-			// check if the current user is a customer associated with this post and return true
+			// check if the current user is a customer associated with this post and return true.
 			if ( $this->customer_owns_shift() ) {
 				return true;
 			}
@@ -719,12 +726,12 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		 * @return bool
 		 */
 		public function customer_owns_shift() {
-			// get current user
+			// get current user.
 			$current_user = wp_get_current_user();
 
 			$roles = $current_user->roles;
 			if ( is_array( $roles ) && ! empty( $roles ) ) {
-				if ( in_array( 'shiftee_customer', $roles ) ) {
+				if ( in_array( 'shiftee_customer', $roles, true ) ) {
 					global $post;
 					$users = get_users(
 						array(
@@ -736,7 +743,7 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 						return false;
 					}
 					foreach ( $users as $user ) {
-						if ( $user->ID == $current_user->ID ) {
+						if ( $user->ID === $current_user->ID ) {
 							return true;
 						}
 					}
@@ -752,7 +759,7 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		 *
 		 * @since 2.0.0
 		 *
-		 * @param $field_name
+		 * @param string $field_name Name of the field.
 		 *
 		 * @return  string
 		 */
@@ -774,8 +781,9 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 
 			foreach ( $employee_list as $id => $name ) {
 
-				if ( isset( $_POST['employee'] ) ) {
-					$selected = selected( $id, $_POST['employee'] );
+				if ( isset( $_POST['employee'] ) ) { // phpcs:ignore
+					// phpcs:ignore
+					$selected = selected( $id, sanitize_text_field( wp_unslash( $_POST['employee'] ) ) ); // We don't need to verify a nonce because we aren't actually processing any form data here.
 				}
 
 				$options .= '<option value="' . $id . '"' . $selected . '>' . $name . '</option>';
@@ -787,8 +795,8 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		/**
 		 * Generate drop-down options for a taxonomy
 		 *
-		 * @param $taxonomy
-		 * @param $field_name
+		 * @param string $taxonomy The taxonomy to use.
+		 * @param string $field_name Name of the field.
 		 *
 		 * @return string
 		 */
@@ -802,7 +810,8 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 				foreach ( $terms as $term ) {
 
 					if ( '' !== $field_name ) {
-						$selected = selected( $_POST[ $field_name ], $term->slug );
+						// phpcs:ignore
+						$selected = selected( sanitize_text_field( wp_unslash( $_POST[ $field_name ], $term->slug ) ) ); // We don't need to verify a nonce because we're not actually processing any form data here.
 					} else {
 						$selected = '';
 					}
@@ -816,12 +825,33 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		}
 
 		/**
+		 * List the allowed tags in a dropdown menu for wp_kses.
+		 *
+		 * @return array
+		 */
+		public function dropdown_allowed_html() {
+			$allowed_html = array(
+				'label'  => array(),
+				'select' => array(
+					'name' => array(),
+					'id'   => array(),
+				),
+				'option' => array(
+					'value'    => array(),
+					'selected' => array(),
+				),
+			);
+
+			return $allowed_html;
+		}
+
+		/**
 		 *  Get an employee's manager
 		 *
 		 * @since 2.0.0
 		 *
-		 * @param $employee  ID of employee
-		 * @param $return
+		 * @param int    $employee  ID of employee.
+		 * @param string $return Whether to return an ID, name, or email address.
 		 *
 		 * @return string
 		 */
@@ -836,17 +866,19 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 
 			if ( ! empty( $users_manager->results ) ) {
 				foreach ( $users_manager->results as $manager ) {
+					$result = false;
 					switch ( $return ) {
 						case 'ID':
-							return $manager->ID;
+							$result = $manager->ID;
 							break;
 						case 'name':
-							return $manager->user_nicename;
+							$result = $manager->user_nicename;
 							break;
 						case 'email':
-							return $manager->user_email;
+							$result = $manager->user_email;
 							break;
 					}
+					return $result;
 				}
 			} else {
 				return false;
@@ -859,7 +891,8 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		 *
 		 * @since 2.0.0
 		 *
-		 * @param $field_name
+		 * @param string $field_name Name of the field to generate.
+		 * @param string $value Whether the field value should be the job's post id or slug.
 		 *
 		 * @return string
 		 */
@@ -880,12 +913,13 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 					$job_query->the_post();
 
 					if ( '' !== $field_name ) {
-						$selected = selected( $_POST[ $field_name ], get_the_id() );
+						// phpcs:ignore
+						$selected = selected( sanitize_text_field( wp_unslash( $_POST[ $field_name ] ) ), get_the_id() ); // don't need to check the nonce here, because this is called by functions that will check the nonce, and we're not writing to the database.
 					} else {
 						$selected = '';
 					}
 
-					if ( 'id' == $value ) {
+					if ( 'id' === $value ) {
 						$job_value = get_the_id();
 					} else {
 						global $post;
@@ -905,7 +939,7 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		 *
 		 * @since 2.0.0
 		 *
-		 * @param $taxonomy
+		 * @param string $taxonomy The taxonomy to retrieve.
 		 *
 		 * @return string
 		 */
@@ -949,9 +983,9 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 
 			$options = $this->shiftee_options();
 
-			$date_format       = $this->convert_php_datetime_to_js_datetime( $this->safe_date_format() ); // need to convert this to JS-friendly format
-			$time_format       = $this->convert_php_datetime_to_js_datetime( get_option( 'time_format' ) ); // convert to JS
-			$first_day_of_week = $this->convert_weekday_to_number( $options['week_starts_on'] ); // convert to number
+			$date_format       = $this->convert_php_datetime_to_js_datetime( $this->safe_date_format() ); // need to convert this to JS-friendly format.
+			$time_format       = $this->convert_php_datetime_to_js_datetime( get_option( 'time_format' ) ); // convert to JS.
+			$first_day_of_week = $this->convert_weekday_to_number( $options['week_starts_on'] ); // convert to number.
 
 			$datetimepicker_options = array(
 				'date_format'       => $date_format,
@@ -967,7 +1001,7 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		 *
 		 * @see https://stackoverflow.com/questions/2891937/strtotime-doesnt-work-with-dd-mm-yyyy-format
 		 *
-		 * @return mixed|string|void
+		 * @return mixed|string
 		 */
 		public function safe_date_format() {
 			$options = $this->shiftee_options();
@@ -975,25 +1009,23 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 
 			switch ( $format ) {
 				case 'F j, Y':
-					return 'n/j/Y';
+					$format = 'n/j/Y';
 					break;
 				case 'M j, Y':
-					return 'n/j/Y';
+					$format = 'n/j/Y';
 					break;
 				case 'M j':
-					return 'n/j/Y';
+					$format = 'n/j/Y';
 					break;
 				case 'j F Y':
-					return 'j-n-Y';
+					$format = 'j-n-Y';
 					break;
-				case 'j M Y';
-					return 'j-n-Y';
+				case 'j M Y':
+					$format = 'j-n-Y';
 					break;
-				case 'j M';
-					return 'j-n-Y';
+				case 'j M':
+					$format = 'j-n-Y';
 					break;
-				default:
-					return $format;
 			}
 
 			return $format;
@@ -1006,32 +1038,32 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		 *
 		 * @see http://stackoverflow.com/questions/16702398/convert-a-php-date-format-to-a-jqueryui-datepicker-date-format
 		 *
-		 * @param $datetime_format
-		 * @param $format Format according to jquery datetimepicker or moment
+		 * @param string $datetime_format PHP date format.
+		 * @param string $format Format according to jquery datetimepicker or moment.
 		 *
 		 * @return string
 		 */
 		public function convert_php_datetime_to_js_datetime( $datetime_format, $format = 'datetimepicker' ) {
-			if ( 'moment' == $format ) {
+			if ( 'moment' === $format ) {
 				$symbols = array(
-					// Day
+					// Day.
 					'd' => 'DD',
 					'D' => 'ddd',
 					'j' => 'D',
 					'l' => 'dddd',
 					'z' => 'DDD',
-					'S' => 'o',  // S is ordinal suffix
-					// Week
+					'S' => 'o',  // S is ordinal suffix.
+					// Week.
 					'W' => 'w',
-					// Month
+					// Month.
 					'F' => 'MMMM',
 					'm' => 'MM',
 					'M' => 'MMM',
 					'n' => 'M',
-					// Year
+					// Year.
 					'Y' => 'YYYY',
 					'y' => 'YY',
-					// Time
+					// Time.
 					'a' => 'a',
 					'A' => 'A',
 					'g' => 'h',
@@ -1043,26 +1075,26 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 					'u' => 'SS',
 				);
 			} else {
-				// datetimepicker formatting
+				// datetimepicker formatting.
 				$symbols = array(
-					// Day
+					// Day.
 					'd' => 'dd',
 					'D' => 'D',
 					'j' => 'd',
 					'l' => 'DD',
 					'z' => 'o',
-					'S' => '',  // S is ordinal suffix
-					// Week
+					'S' => '',  // S is ordinal suffix.
+					// Week.
 					'W' => '',
-					// Month
+					// Month.
 					'F' => 'MM',
 					'm' => 'mm',
 					'M' => 'M',
 					'n' => 'm',
-					// Year
+					// Year.
 					'Y' => 'yy',
 					'y' => 'y',
-					// Time
+					// Time.
 					'a' => 'tt',
 					'A' => 'TT',
 					'g' => 'h',
@@ -1078,9 +1110,10 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 			$jqueryui_format = '';
 			$escaping        = false;
 
-			for ( $i = 0; $i < strlen( $datetime_format ); $i ++ ) {
+			$length = strlen( $datetime_format );
+			for ( $i = 0; $i < $length; $i ++ ) {
 				$char = $datetime_format[ $i ];
-				if ( $char === '\\' ) { // PHP date format escaping character
+				if ( '\\' === $char ) { // PHP date format escaping character.
 					$i ++;
 					if ( $escaping ) {
 						$jqueryui_format .= $datetime_format[ $i ];
@@ -1108,7 +1141,7 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		/**
 		 * Convert a day of the week to a number
 		 *
-		 * @param $weekday
+		 * @param string $weekday Day of the week.
 		 *
 		 * @return int
 		 */
@@ -1146,7 +1179,7 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		 *
 		 * @since 1.9.0
 		 *
-		 * @param int $number
+		 * @param int $number The number to format.
 		 *
 		 * @return string
 		 */
@@ -1179,13 +1212,13 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		 */
 		public function currency_symbol_before() {
 
-			// if option is before = before
-			// if option is after = after
-			// if option is anything else = before
+			// if option is before = before.
+			// if option is after = after.
+			// if option is anything else = before.
 
 			$options = $this->shiftee_options();
 
-			if ( 'after' == $options['currency_position'] ) {
+			if ( 'after' === $options['currency_position'] ) {
 				return false;
 			} else {
 				return true;
@@ -1377,7 +1410,7 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 
 			$options  = $this->shiftee_options();
 			$currency = $options['currency'];
-			if ( ! isset( $currency ) || '' == $currency ) {
+			if ( ! isset( $currency ) || '' === $currency ) {
 				$currency = 'USD';
 			}
 

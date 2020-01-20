@@ -1,73 +1,71 @@
 <?php
-
 /**
  * Define the update functionality
  *
  * Make updates to the database when the user updates the plugin
  *
- * @link       http://ran.ge
- * @since      2.1.0
+ * @link  https://morgan.wpalchemists.com
+ * @since 2.1.0
  *
  * @package    Shiftee Basic
  * @subpackage Shiftee Basic/includes
  */
 
-/**
- * Define the update functionality.
- *
- * Make updates to the database when the user updates the plugin
- *
- * @since      2.1.0
- * @package    Shiftee Basic
- * @subpackage Shiftee Basic/includes
- * @author     Range <support@shiftee.co>
- */
 if ( ! class_exists( 'Shiftee_Basic_Updater' ) ) {
+	/**
+	 * Define the update functionality.
+	 *
+	 * Make updates to the database when the user updates the plugin
+	 *
+	 * @since      2.1.0
+	 * @package    Shiftee Basic
+	 * @subpackage Shiftee Basic/includes
+	 * @author     Range <support@shiftee.co>
+	 */
 	class Shiftee_Basic_Updater {
-
 		/**
 		 * The ID of this plugin.
 		 *
-		 * @since    2.0.0
-		 * @access   private
-		 * @var      string $plugin_name The ID of this plugin.
+		 * @since  2.0.0
+		 * @access private
+		 * @var    string $plugin_name The ID of this plugin.
 		 */
 		private $plugin_name;
 
 		/**
 		 * The version of this plugin.
 		 *
-		 * @since    2.0.0
-		 * @access   private
-		 * @var      string $version The current version of this plugin.
+		 * @since  2.0.0
+		 * @access private
+		 * @var    string $version The current version of this plugin.
 		 */
 		private $version;
 
 		/**
 		 * The plugin settings.
 		 *
-		 * @since    2.0.0
-		 * @access   private
-		 * @var      string    options    The settings for this plugin.
+		 * @since  2.0.0
+		 * @access private
+		 * @var    string    options    The settings for this plugin.
 		 */
 		private $options;
 
 		/**
 		 * The plugin helper.
 		 *
-		 * @since    2.0.0
-		 * @access   private
-		 * @var      string    options    The helper class.
+		 * @since  2.0.0
+		 * @access private
+		 * @var    string    options    The helper class.
 		 */
 		private $helper;
 
 		/**
 		 * Initialize the class and set its properties.
 		 *
-		 * @since    2.0.0
+		 * @since 2.0.0
 		 *
-		 * @param      string $plugin_name The name of this plugin.
-		 * @param      string $version The version of this plugin.
+		 * @param string $plugin_name The name of this plugin.
+		 * @param string $version     The version of this plugin.
 		 */
 		public function __construct( $plugin_name, $version ) {
 
@@ -86,20 +84,21 @@ if ( ! class_exists( 'Shiftee_Basic_Updater' ) ) {
 		 */
 		public function check_for_updates() {
 
-			if ( isset( $_GET['page'] ) && $_GET['page'] == 'shiftee-upgrades' ) {
+		    // phpcs:ignore
+			if ( isset( $_GET['page'] ) && 'shiftee-upgrades' === $_GET['page']  ) {  // We don't need to verify a nonce because all we're doing is checking whether we need to display some text or not.
 				return;
-			} // Don't show notices on the upgrades page
+			} // Don't show notices on the upgrades page.
 
 			$db_version = $this->options['db_version'];
 
-			// check if we need the 2.1.0 update
+			// check if we need the 2.1.0 update.
 			if ( version_compare( $db_version, '2.1.0', '<' ) ) { ?>
 				<div class="error">
 					<p>
-						<?php _e( 'Shiftee needs to update your database so you can use the latest features!  Shiftee will not work properly without this update.', 'employee-scheduler' ); ?>
+				<?php esc_html_e( 'Shiftee needs to update your database so you can use the latest features!  Shiftee will not work properly without this update.', 'employee-scheduler' ); ?>
 					</p>
 					<p>
-						<strong><a href="index.php?page=shiftee-upgrades&shiftee-upgrade=upgrade_shift_meta"><?php _e( 'Update Shiftee now!', 'employee-scheduler' ); ?></a></strong>
+						<strong><a href="index.php?page=shiftee-upgrades&shiftee-upgrade=upgrade_shift_meta"><?php esc_html_e( 'Update Shiftee now!', 'employee-scheduler' ); ?></a></strong>
 					</p>
 				</div>
 				<?php
@@ -114,9 +113,9 @@ if ( ! class_exists( 'Shiftee_Basic_Updater' ) ) {
 		 */
 		public function upgrade_shift_meta() {
 
-			if ( ! wp_verify_nonce( $_POST['nonce'], 'shiftee_upgrade_shift_meta' ) ) {
+			if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'shiftee_upgrade_shift_meta' ) ) {
 				$results = 'error';
-				die( $results );
+				die( esc_html( $results ) );
 			}
 
 			$args = array(
@@ -154,14 +153,14 @@ if ( ! class_exists( 'Shiftee_Basic_Updater' ) ) {
 					$this->delete_shift_meta_fields( get_the_id() );
 				endwhile;
 
-				// update the database to record what step we're on
+				// update the database to record what step we're on.
 				$options = get_option( 'wpaesm_options' );
 
 				$options['shiftee_meta_update_last_step'] = intval( $current_step ) + 100;
 				update_option( 'wpaesm_options', $options );
 
 				$results = (string) ( intval( $current_step ) + 100 );
-				die( $results );
+				die( esc_html( $results ) );
 
 			} else {
 				$this->update_expenses();
@@ -173,14 +172,14 @@ if ( ! class_exists( 'Shiftee_Basic_Updater' ) ) {
 				update_option( 'wpaesm_options', $options );
 
 				$results = 'finished';
-				die( $results );
+				die( esc_html( $results ) );
 			}
 
 			wp_reset_postdata();
 
 			$results = 'error';
 
-			die( $results );
+			die( esc_html( $results ) );
 		}
 
 		/**
@@ -188,7 +187,7 @@ if ( ! class_exists( 'Shiftee_Basic_Updater' ) ) {
 		 *
 		 * @since 2.1.0
 		 *
-		 * @param $shift_id
+		 * @param int $shift_id The id of the shift.
 		 */
 		public function convert_start( $shift_id ) {
 			$date  = get_post_meta( $shift_id, '_wpaesm_date', true );
@@ -205,7 +204,7 @@ if ( ! class_exists( 'Shiftee_Basic_Updater' ) ) {
 		 *
 		 * @since 2.1.0
 		 *
-		 * @param $shift_id
+		 * @param int $shift_id The id of the shift.
 		 */
 		public function convert_end( $shift_id ) {
 			$date  = get_post_meta( $shift_id, '_wpaesm_date', true );
@@ -222,7 +221,7 @@ if ( ! class_exists( 'Shiftee_Basic_Updater' ) ) {
 		 *
 		 * @since 2.1.0
 		 *
-		 * @param $shift_id
+		 * @param int $shift_id The id of the shift.
 		 */
 		public function convert_clockin( $shift_id ) {
 			$date  = get_post_meta( $shift_id, '_wpaesm_date', true );
@@ -239,7 +238,7 @@ if ( ! class_exists( 'Shiftee_Basic_Updater' ) ) {
 		 *
 		 * @since 2.1.0
 		 *
-		 * @param $shift_id
+		 * @param int $shift_id The id of the shift.
 		 */
 		public function convert_clockout( $shift_id ) {
 			$date  = get_post_meta( $shift_id, '_wpaesm_date', true );
@@ -256,7 +255,7 @@ if ( ! class_exists( 'Shiftee_Basic_Updater' ) ) {
 		 *
 		 * @since 2.1.0
 		 *
-		 * @param $shift_id
+		 * @param int $shift_id The id of the shift.
 		 */
 		public function convert_location_in( $shift_id ) {
 			$location_in = get_post_meta( $shift_id, '_wpaesm_location_in', true );
@@ -270,7 +269,7 @@ if ( ! class_exists( 'Shiftee_Basic_Updater' ) ) {
 		 *
 		 * @since 2.1.0
 		 *
-		 * @param $shift_id
+		 * @param int $shift_id The id of the shift.
 		 */
 		public function convert_location_out( $shift_id ) {
 			$location_out = get_post_meta( $shift_id, '_wpaesm_location_out', true );
@@ -284,11 +283,11 @@ if ( ! class_exists( 'Shiftee_Basic_Updater' ) ) {
 		 *
 		 * @since 2.1.0
 		 *
-		 * @param $shift_id
+		 * @param int $shift_id The id of the shift.
 		 */
 		public function convert_notify( $shift_id ) {
 			$notify = get_post_meta( $shift_id, '_wpaesm_notify', true );
-			if ( $notify && '1' == $notify ) {
+			if ( $notify && '1' === $notify ) {
 				add_post_meta( $shift_id, '_shiftee_notify_employee', 'on' );
 			}
 		}
@@ -298,7 +297,7 @@ if ( ! class_exists( 'Shiftee_Basic_Updater' ) ) {
 		 *
 		 * @since 2.1.0
 		 *
-		 * @param $shift_id
+		 * @param int $shift_id The id of the shift.
 		 */
 		public function convert_shiftnote( $shift_id ) {
 			$note = get_post_meta( $shift_id, '_wpaesm_shiftnotes', true );
@@ -312,7 +311,7 @@ if ( ! class_exists( 'Shiftee_Basic_Updater' ) ) {
 		 *
 		 * @since 2.1.0
 		 *
-		 * @param $shift_id
+		 * @param int $shift_id The id of the shift.
 		 */
 		public function convert_employeenotes( $shift_id ) {
 			$notes = get_post_meta( $shift_id, '_wpaesm_employeenote', true );
@@ -331,7 +330,7 @@ if ( ! class_exists( 'Shiftee_Basic_Updater' ) ) {
 		 *
 		 * @since 2.1.0
 		 *
-		 * @param $shift_id
+		 * @param int $shift_id The id of the shift.
 		 */
 		public function add_hidden_fields( $shift_id ) {
 			$worked_duration = $this->helper->get_shift_duration( $shift_id, 'worked', 'hours' );
@@ -355,7 +354,7 @@ if ( ! class_exists( 'Shiftee_Basic_Updater' ) ) {
 		 *
 		 * @since 2.1.0
 		 *
-		 * @param $shift_id
+		 * @param int $shift_id The id of the shift.
 		 */
 		public function convert_shift_history( $shift_id ) {
 			$events = get_post_meta( $shift_id, '_wpaesp_history', true );
@@ -371,6 +370,11 @@ if ( ! class_exists( 'Shiftee_Basic_Updater' ) ) {
 			add_post_meta( $shift_id, '_shiftee_shift_assignment_history', $events );
 		}
 
+		/**
+		 * Update the invoice field.
+		 *
+		 * @param int $shift_id The id of the shift.
+		 */
 		public function convert_invoice( $shift_id ) {
 			$invoice = get_post_meta( $shift_id, '_wpaesm_invoice', true );
 			if ( isset( $invoice ) && '' !== $invoice ) {
@@ -383,7 +387,7 @@ if ( ! class_exists( 'Shiftee_Basic_Updater' ) ) {
 		 *
 		 * @since 2.1.0
 		 *
-		 * @param $shift_id
+		 * @param int $shift_id The id of the shift to update.
 		 */
 		public function delete_shift_meta_fields( $shift_id ) {
 			delete_post_meta( $shift_id, '_wpaesm_starttime' );
@@ -397,6 +401,11 @@ if ( ! class_exists( 'Shiftee_Basic_Updater' ) ) {
 			delete_post_meta( $shift_id, '_wpaesm_invoice' );
 		}
 
+		/**
+		 * Update expenses
+		 *
+		 * Change the name of the meta fields from the _wpaesm_ prefix to the _shiftee_ prefix
+		 */
 		public function update_expenses() {
 			$args = array(
 				'post_type'      => 'expense',
@@ -417,38 +426,5 @@ if ( ! class_exists( 'Shiftee_Basic_Updater' ) ) {
 				endwhile;
 			}
 		}
-
-		public function update_on_demand_options() {
-			$args = array(
-				'post_type'      => 'qualification_form',
-				'posts_per_page' => - 1,
-			);
-
-			$the_query = new WP_Query( $args );
-
-			if ( $the_query->have_posts() ) {
-				while ( $the_query->have_posts() ) :
-					$the_query->the_post();
-					$questions = get_post_meta( get_the_id(), '_shiftee_od_question', true );
-					if ( is_array( $questions ) && ! empty( $questions ) ) {
-						$i = 0;
-						foreach ( $questions as $question ) {
-							if ( isset( $question['option'] ) && ! empty( $question['option'] ) ) {
-								$new_options = array();
-								foreach ( $question['option'] as $option ) {
-									$new_options[] = $option['option'];
-								}
-								$questions[ $i ]['option'] = $new_options;
-								$i ++;
-							}
-						}
-					}
-					delete_post_meta( get_the_id(), '_shiftee_od_question' );
-					add_post_meta( get_the_id(), '_shiftee_od_question', $questions );
-
-				endwhile;
-			}
-		}
-
 	}
 }

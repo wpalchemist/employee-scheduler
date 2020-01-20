@@ -1,31 +1,30 @@
 <?php
-
 /**
  * Define the internationalization functionality
  *
  * Loads and defines the internationalization files for this plugin
  * so that it is ready for translation.
  *
- * @link       http://ran.ge
+ * @link       https://morgan.wpalchemists.com
  * @since      2.0.0
  *
  * @package    Shiftee Basic
  * @subpackage Shiftee Basic/includes
  */
 
-/**
- * Define the internationalization functionality.
- *
- * Loads and defines the internationalization files for this plugin
- * so that it is ready for translation.
- *
- * @since      2.0.0
- * @package    Shiftee Basic
- * @subpackage Shiftee Basic/includes
- * @author     Range <support@shiftee.co>
- */
-if ( ! class_exists( 'Shiftee_Basic_i18n' ) ) {
-	class Shiftee_Basic_i18n {
+if ( ! class_exists( 'Shiftee_Basic_I18n' ) ) {
+	/**
+	 * Define the internationalization functionality.
+	 *
+	 * Loads and defines the internationalization files for this plugin
+	 * so that it is ready for translation.
+	 *
+	 * @since      2.0.0
+	 * @package    Shiftee Basic
+	 * @subpackage Shiftee Basic/includes
+	 * @author     Range <support@shiftee.co>
+	 */
+	class Shiftee_Basic_I18n {
 
 
 		/**

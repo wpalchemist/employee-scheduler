@@ -1,26 +1,25 @@
 <?php
-
 /**
  * Fired during plugin activation
  *
- * @link       http://ran.ge
+ * @link       https://morgan.wpalchemists.com
  * @since      2.0.0
  *
  * @package    Shiftee Basic
  * @subpackage Shiftee Basic/includes
  */
 
-/**
- * Fired during plugin activation.
- *
- * This class defines all code necessary to run during the plugin's activation.
- *
- * @since      2.0.0
- * @package    Shiftee Basic
- * @subpackage Shiftee Basic/includes
- * @author     Range <support@shiftee.co>
- */
 if ( ! class_exists( 'Shiftee_Basic_Activator' ) ) {
+	/**
+	 * Fired during plugin activation.
+	 *
+	 * This class defines all code necessary to run during the plugin's activation.
+	 *
+	 * @since      2.0.0
+	 * @package    Shiftee Basic
+	 * @subpackage Shiftee Basic/includes
+	 * @author     Range <support@shiftee.co>
+	 */
 	class Shiftee_Basic_Activator {
 
 		/**
@@ -42,10 +41,11 @@ if ( ! class_exists( 'Shiftee_Basic_Activator' ) ) {
 				wp_die(
 					'<p>' .
 					sprintf(
-						__( 'This plugin cannot be activated because it requires a PHP version greater than %1$s. Your PHP version can be updated by your hosting company.', 'employee-scheduler' ),
-						$php
+						// Translators: this site's version of PHP.
+						esc_html__( 'This plugin cannot be activated because it requires a PHP version greater than %1$s. Your PHP version can be updated by your hosting company.', 'employee-scheduler' ),
+						esc_html( $php )
 					)
-					. '</p> <a href="' . admin_url( 'plugins.php' ) . '">' . __( 'Go back', 'employee-scheduler' ) . '</a>'
+					. '</p> <a href="' . esc_url( admin_url( 'plugins.php' ) ) . '">' . esc_html__( 'Go back', 'employee-scheduler' ) . '</a>'
 				);
 			}
 
@@ -54,10 +54,11 @@ if ( ! class_exists( 'Shiftee_Basic_Activator' ) ) {
 				wp_die(
 					'<p>' .
 					sprintf(
-						__( 'This plugin cannot be activated because it requires a WordPress version greater than %1$s. Please go to Dashboard &rarr; Updates to update to the latest version of WordPress .', 'employee-scheduler' ),
-						$php
+						// Translators: This site's version of WordPress.
+						esc_html__( 'This plugin cannot be activated because it requires a WordPress version greater than %1$s. Please go to Dashboard &rarr; Updates to update to the latest version of WordPress .', 'employee-scheduler' ),
+						esc_html( $wp )
 					)
-					. '</p> <a href="' . admin_url( 'plugins.php' ) . '">' . __( 'Go back', 'employee-scheduler' ) . '</a>'
+					. '</p> <a href="' . esc_url( admin_url( 'plugins.php' ) ) . '">' . esc_html__( 'Go back', 'employee-scheduler' ) . '</a>'
 				);
 			}
 
@@ -81,10 +82,10 @@ if ( ! class_exists( 'Shiftee_Basic_Activator' ) ) {
 				)
 			);
 
-			// save the database version number
+			// save the database version number.
 			$options = get_option( 'wpaesm_options' );
 
-			if ( ! isset( $options['db_version'] ) || '' == $options['db_version'] ) {
+			if ( ! isset( $options['db_version'] ) || '' === $options['db_version'] ) {
 
 				$option = array(
 					'db_version' => SHIFTEE_BASIC_VERSION,

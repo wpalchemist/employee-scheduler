@@ -1,29 +1,50 @@
 <?php
-
 /**
  * The file that defines the plugin options class
  *
- * @link       http://ran.ge
+ * @link       https://morgan.wpalchemists.com
  * @since      2.0.0
  *
  * @package    Shiftee Basic
  * @subpackage Shiftee Basic/admin
  */
 
-/**
- *
- * @since      2.0.0
- * @package    Shiftee Basic
- * @subpackage Shiftee Basic/admin
- * @author     Range <support@shiftee.co>
- */
 if ( ! class_exists( 'Shiftee_Basic_Options' ) ) {
+	/**
+	 * Admin functions
+	 *
+	 * @since      2.0.0
+	 * @package    Shiftee Basic
+	 * @subpackage Shiftee Basic/admin
+	 * @author     Range <support@shiftee.co>
+	 */
 	class Shiftee_Basic_Options {
 
+		/**
+		 * The plugin settings.
+		 *
+		 * @since    2.0.0
+		 * @access   private
+		 * @var      string    options    The settings for this plugin.
+		 */
 		private $options;
 
+		/**
+		 * Currencies.
+		 *
+		 * @since    2.0.0
+		 * @access   private
+		 * @var      string    options    Functions related to currencies.
+		 */
 		private $currencies;
 
+		/**
+		 * The plugin helper.
+		 *
+		 * @since    2.0.0
+		 * @access   private
+		 * @var      string    options    The helper class.
+		 */
 		private $helper;
 
 		/**
@@ -40,6 +61,9 @@ if ( ! class_exists( 'Shiftee_Basic_Options' ) ) {
 
 		}
 
+		/**
+		 * Add the options page to the dashboard menu
+		 */
 		public function add_options_page() {
 			add_menu_page(
 				apply_filters( 'shiftee_name', __( 'Shiftee Basic', 'employee-scheduler' ) ),
@@ -305,13 +329,15 @@ if ( ! class_exists( 'Shiftee_Basic_Options' ) ) {
 		/**
 		 * Render "Notification From Name" setting.
 		 *
+		 * @param array $args Field arguments.
+		 *
 		 * @since 1.0
 		 */
 		public function notification_from_name_render( $args ) { ?>
 
 			<input type="text" size="57" name="wpaesm_options[notification_from_name]"
-				   value="<?php echo $this->options['notification_from_name']; ?>"/>
-			<br/><span class="description"><?php echo $args[0]; ?></span>
+				value="<?php echo esc_html( $this->options['notification_from_name'] ); ?>"/>
+			<br/><span class="description"><?php echo esc_html( $args[0] ); ?></span>
 
 			<?php
 		}
@@ -319,33 +345,37 @@ if ( ! class_exists( 'Shiftee_Basic_Options' ) ) {
 		/**
 		 * Render "Notification Email" setting.
 		 *
+		 * @param array $args Field arguments.
+		 *
 		 * @since 1.0
 		 */
 		public function notification_from_email_render( $args ) {
 			?>
-
 			<input type="text" size="57" name="wpaesm_options[notification_from_email]"
-				   value="<?php echo $this->options['notification_from_email']; ?>"/>
-			<br/><span class="description"><?php echo $args[0]; ?></span>
+				value="<?php echo esc_html( $this->options['notification_from_email'] ); ?>"/>
+			<br/><span class="description"><?php echo esc_html( $args[0] ); ?></span>
 			<?php
 		}
 
 		/**
 		 * Render "Notification Subject" setting.
 		 *
+		 * @param array $args Field arguments.
+		 *
 		 * @since 1.0
 		 */
 		public function notification_subject_render( $args ) {
 			?>
-
 			<input type="text" size="57" name="wpaesm_options[notification_subject]"
-				   value="<?php echo $this->options['notification_subject']; ?>"/>
-			<br/><span class="description"><?php echo $args[0]; ?></span>
+				value="<?php echo esc_html( $this->options['notification_subject'] ); ?>"/>
+			<br/><span class="description"><?php echo esc_html( $args[0] ); ?></span>
 			<?php
 		}
 
 		/**
 		 * Render "Admin Notify Status" setting.
+		 *
+		 * @param array $args Field arguments.
 		 *
 		 * @since 1.0
 		 */
@@ -353,19 +383,21 @@ if ( ! class_exists( 'Shiftee_Basic_Options' ) ) {
 			?>
 
 			<label><input name="wpaesm_options[admin_notify_status]" type="checkbox"
-						  value="1" 
-						  <?php
-							if ( isset( $this->options['admin_notify_status'] ) ) {
-								checked( '1', $this->options['admin_notify_status'] );
-							}
-							?>
-				 /> <?php _e( 'Turn on shift status notifications', 'employee-scheduler' ); ?></label>
-			<br/><span class="description"><?php echo $args[0]; ?></span>
+					value="1"
+					<?php
+					if ( isset( $this->options['admin_notify_status'] ) ) {
+						checked( '1', $this->options['admin_notify_status'] );
+					}
+					?>
+			/> <?php esc_html_e( 'Turn on shift status notifications', 'employee-scheduler' ); ?></label>
+			<br/><span class="description"><?php echo esc_html( $args[0] ); ?></span>
 			<?php
 		}
 
 		/**
 		 * Render "Admin Notify Note" setting.
+		 *
+		 * @param array $args Field arguments.
 		 *
 		 * @since 1.0
 		 */
@@ -373,39 +405,42 @@ if ( ! class_exists( 'Shiftee_Basic_Options' ) ) {
 			?>
 
 			<label><input name="wpaesm_options[admin_notify_note]" type="checkbox"
-						  value="1" 
-						  <?php
-							if ( isset( $this->options['admin_notify_note'] ) ) {
-								checked( '1', $this->options['admin_notify_note'] );
-							}
-							?>
-				 /> <?php _e( 'Turn on shift note notifications', 'employee-scheduler' ); ?></label>
-			<br/><span class="description"><?php echo $args[0]; ?></span>
+					value="1"
+					<?php
+					if ( isset( $this->options['admin_notify_note'] ) ) {
+						checked( '1', $this->options['admin_notify_note'] );
+					}
+					?>
+			/> <?php esc_html_e( 'Turn on shift note notifications', 'employee-scheduler' ); ?></label>
+			<br/><span class="description"><?php echo esc_html( $args[0] ); ?></span>
 			<?php
 		}
 
 		/**
 		 * Render "Admin Notify Clockout" setting.
 		 *
+		 * @param array $args Field arguments.
+		 *
 		 * @since 2.1.2
 		 */
 		public function admin_notify_clockin_render( $args ) {
 			?>
-
 			<label><input name="wpaesm_options[admin_notify_clockin]" type="checkbox"
-						  value="1" 
-						  <?php
-							if ( isset( $this->options['admin_notify_clockin'] ) ) {
-								checked( '1', $this->options['admin_notify_clockin'] );
-							}
-							?>
-				 /> <?php _e( 'Turn on clockin notifications', 'employee-scheduler' ); ?></label>
-			<br/><span class="description"><?php echo $args[0]; ?></span>
+					value="1"
+					<?php
+					if ( isset( $this->options['admin_notify_clockin'] ) ) {
+						checked( '1', $this->options['admin_notify_clockin'] );
+					}
+					?>
+			/> <?php esc_html_e( 'Turn on clockin notifications', 'employee-scheduler' ); ?></label>
+			<br/><span class="description"><?php echo esc_html( $args[0] ); ?></span>
 			<?php
 		}
 
 		/**
 		 * Render "Admin Notify Clockout" setting.
+		 *
+		 * @param array $args Field arguments.
 		 *
 		 * @since 1.7.0
 		 */
@@ -413,39 +448,41 @@ if ( ! class_exists( 'Shiftee_Basic_Options' ) ) {
 			?>
 
 			<label><input name="wpaesm_options[admin_notify_clockout]" type="checkbox"
-						  value="1" 
-						  <?php
-							if ( isset( $this->options['admin_notify_clockout'] ) ) {
-								checked( '1', $this->options['admin_notify_clockout'] );
-							}
-							?>
-				 /> <?php _e( 'Turn on clockout notifications', 'employee-scheduler' ); ?></label>
-			<br/><span class="description"><?php echo $args[0]; ?></span>
+				value="1"
+				<?php
+				if ( isset( $this->options['admin_notify_clockout'] ) ) {
+					checked( '1', $this->options['admin_notify_clockout'] );
+				}
+				?>
+			/> <?php esc_html_e( 'Turn on clockout notifications', 'employee-scheduler' ); ?></label>
+			<br/><span class="description"><?php echo esc_html( $args[0] ); ?></span>
 			<?php
 		}
 
 		/**
 		 * Render "Admin Notification Email" setting.
 		 *
+		 * @param array $args Field arguments.
+		 *
 		 * @since 1.0
 		 */
 		public function admin_notification_email_render( $args ) {
 			?>
-
 			<input type="text" size="57" name="wpaesm_options[admin_notification_email]"
-				   value="<?php echo $this->options['admin_notification_email']; ?>"/>
-			<br/><span class="description"><?php echo $args[0]; ?></span>
+				value="<?php echo esc_html( $this->options['admin_notification_email'] ); ?>"/>
+			<br/><span class="description"><?php echo esc_html( $args[0] ); ?></span>
 			<?php
 		}
 
 		/**
 		 * Render "Date Format" setting.
 		 *
+		 * @param array $args Field arguments.
+		 *
 		 * @since 2.1.7
 		 */
 		public function date_format_render( $args ) {
 			?>
-
 			<select name="wpaesm_options[date_format]">
 				<option value="F j, Y" <?php selected( $this->options['date_format'], 'F j, Y' ); ?> >January 25, 2018</option>
 				<option value="M j, Y" <?php selected( $this->options['date_format'], 'M j, Y' ); ?> >Jan 25, 2018</option>
@@ -460,13 +497,14 @@ if ( ! class_exists( 'Shiftee_Basic_Options' ) ) {
 				<option value="j-n-y" <?php selected( $this->options['date_format'], 'j-n-y' ); ?> >25-1-18</option>
 				<option value="j-n" <?php selected( $this->options['date_format'], 'j-n' ); ?> >25-1</option>
 			</select>
-			<br/><span class="description"><?php echo $args[0]; ?></span>
-
+			<br/><span class="description"><?php echo esc_html( $args[0] ); ?></span>
 			<?php
 		}
 
 		/**
 		 * Render "Time Format" setting.
+		 *
+		 * @param array $args Field arguments.
 		 *
 		 * @since 2.1.7
 		 */
@@ -478,7 +516,7 @@ if ( ! class_exists( 'Shiftee_Basic_Options' ) ) {
 				<option value="g:i A" <?php selected( $this->options['time_format'], 'g:i A' ); ?>>3:30 PM</option>
 				<option value="H:i" <?php selected( $this->options['time_format'], 'H:i' ); ?>>15:30</option>
 			</select>
-			<br/><span class="description"><?php echo $args[0]; ?></span>
+			<br/><span class="description"><?php echo esc_html( $args[0] ); ?></span>
 
 			<?php
 		}
@@ -486,20 +524,22 @@ if ( ! class_exists( 'Shiftee_Basic_Options' ) ) {
 		/**
 		 * Render "Extra Shift Approval" setting.
 		 *
+		 * @param array $args Field arguments.
+		 *
 		 * @since 1.7.0
 		 */
 		public function extra_shift_approval_render( $args ) {
 			?>
 
 			<label><input name="wpaesm_options[extra_shift_approval]" type="checkbox"
-						  value="1" 
-						  <?php
-							if ( isset( $this->options['extra_shift_approval'] ) ) {
-								checked( '1', $this->options['extra_shift_approval'] );
-							}
-							?>
-				 /> <?php _e( 'Require approval for extra shifts', 'employee-scheduler' ); ?></label><br/>
-			<br/><span class="description"><?php echo $args[0]; ?></span>
+					value="1" 
+					<?php
+					if ( isset( $this->options['extra_shift_approval'] ) ) {
+						checked( '1', $this->options['extra_shift_approval'] );
+					}
+					?>
+			/> <?php esc_html_e( 'Require approval for extra shifts', 'employee-scheduler' ); ?></label><br/>
+			<br/><span class="description"><?php echo esc_html( $args[0] ); ?></span>
 
 			<?php
 		}
@@ -507,47 +547,56 @@ if ( ! class_exists( 'Shiftee_Basic_Options' ) ) {
 		/**
 		 * Render "Geolocation" setting.
 		 *
+		 * @param array $args Field arguments.
+		 *
 		 * @since 1.0
 		 */
 		public function geolocation_render( $args ) {
 			?>
-
-			<label><input name="wpaesm_options[geolocation]" type="checkbox"
-						  value="1" 
-						  <?php
-							if ( isset( $this->options['geolocation'] ) ) {
-								checked( '1', $this->options['geolocation'] );
-							}
-							?>
-				 /> <?php printf( __( 'Record location when staff clock in and clock out.  Location tracking will not work in recent browsers unless you have <a href="%s" target="_blank">SSL</a> enabled.', 'employee-scheduler' ), 'http://www.wpbeginner.com/wp-tutorials/how-to-add-ssl-and-https-in-wordpress/' ); ?>
+			<label>
+				<input name="wpaesm_options[geolocation]" type="checkbox"
+					value="1" 
+					<?php
+					if ( isset( $this->options['geolocation'] ) ) {
+						checked( '1', $this->options['geolocation'] );
+					}
+					?>
+				/> 
+				<?php
+				// Translators: URL of a web page that explains how to enable SSL.
+				printf( esc_html__( 'Record location when staff clock in and clock out.  Location tracking will not work in recent browsers unless you have <a href="%s" target="_blank">SSL</a> enabled.', 'employee-scheduler' ), 'http://www.wpbeginner.com/wp-tutorials/how-to-add-ssl-and-https-in-wordpress/' );
+				?>
 			</label>
-			<br/><span class="description"><?php echo $args[0]; ?></span>
+			<br/><span class="description"><?php echo esc_html( $args[0] ); ?></span>
 			<?php
 		}
 
 		/**
 		 * Render "Week Starts On" setting.
 		 *
+		 * @param array $args Field arguments.
+		 *
 		 * @since 1.0
 		 */
 		public function week_starts_on_render( $args ) {
 			?>
-
 			<select name='wpaesm_options[week_starts_on]'>
-				<option value='Sunday' <?php selected( 'Sunday', $this->options['week_starts_on'] ); ?>><?php _e( 'Sunday', 'employee-scheduler' ); ?></option>
-				<option value='Monday' <?php selected( 'Monday', $this->options['week_starts_on'] ); ?>><?php _e( 'Monday', 'employee-scheduler' ); ?></option>
-				<option value='Tuesday' <?php selected( 'Tuesday', $this->options['week_starts_on'] ); ?>><?php _e( 'Tuesday', 'employee-scheduler' ); ?></option>
-				<option value='Wednesday' <?php selected( 'Wednesday', $this->options['week_starts_on'] ); ?>><?php _e( 'Wednesday', 'employee-scheduler' ); ?></option>
-				<option value='Thursday' <?php selected( 'Thursday', $this->options['week_starts_on'] ); ?>><?php _e( 'Thursday', 'employee-scheduler' ); ?></option>
-				<option value='Friday' <?php selected( 'Friday', $this->options['week_starts_on'] ); ?>><?php _e( 'Friday', 'employee-scheduler' ); ?></option>
-				<option value='Saturday' <?php selected( 'Saturday', $this->options['week_starts_on'] ); ?>><?php _e( 'Saturday', 'employee-scheduler' ); ?></option>
+				<option value='Sunday' <?php selected( 'Sunday', $this->options['week_starts_on'] ); ?>><?php esc_html_e( 'Sunday', 'employee-scheduler' ); ?></option>
+				<option value='Monday' <?php selected( 'Monday', $this->options['week_starts_on'] ); ?>><?php esc_html_e( 'Monday', 'employee-scheduler' ); ?></option>
+				<option value='Tuesday' <?php selected( 'Tuesday', $this->options['week_starts_on'] ); ?>><?php esc_html_e( 'Tuesday', 'employee-scheduler' ); ?></option>
+				<option value='Wednesday' <?php selected( 'Wednesday', $this->options['week_starts_on'] ); ?>><?php esc_html_e( 'Wednesday', 'employee-scheduler' ); ?></option>
+				<option value='Thursday' <?php selected( 'Thursday', $this->options['week_starts_on'] ); ?>><?php esc_html_e( 'Thursday', 'employee-scheduler' ); ?></option>
+				<option value='Friday' <?php selected( 'Friday', $this->options['week_starts_on'] ); ?>><?php esc_html_e( 'Friday', 'employee-scheduler' ); ?></option>
+				<option value='Saturday' <?php selected( 'Saturday', $this->options['week_starts_on'] ); ?>><?php esc_html_e( 'Saturday', 'employee-scheduler' ); ?></option>
 			</select>
-			<br/><span class="description"><?php echo $args[0]; ?></span>
+			<br/><span class="description"><?php echo esc_html( $args[0] ); ?></span>
 			<?php
 		}
 
 		/**
 		 * Render "Currency" setting.
+		 *
+		 * @param array $args Field arguments.
 		 *
 		 * @since 1.9
 		 */
@@ -557,11 +606,10 @@ if ( ! class_exists( 'Shiftee_Basic_Options' ) ) {
 			<select name='wpaesm_options[currency]'>
 				<option value='' <?php selected( '', $this->options['currency'] ); ?>></option>
 				<?php foreach ( $this->currencies as $symbol => $name ) { ?>
-					<option value='<?php echo $symbol; ?>' <?php selected( $symbol, $this->options['currency'] ); ?>><?php echo esc_attr( $name ); ?></option>
+					<option value='<?php echo esc_html( $symbol ); ?>' <?php selected( $symbol, $this->options['currency'] ); ?>><?php echo esc_attr( $name ); ?></option>
 				<?php } ?>
-
 			</select>
-			<br/><span class="description"><?php echo $args[0]; ?></span>
+			<br/><span class="description"><?php echo esc_html( $args[0] ); ?></span>
 			<?php
 		}
 
@@ -569,28 +617,30 @@ if ( ! class_exists( 'Shiftee_Basic_Options' ) ) {
 		/**
 		 * Render "Currency Position" setting.
 		 *
+		 * @param array $args Field arguments.
+		 *
 		 * @since 1.9
 		 */
 		public function currency_position_render( $args ) {
 			?>
 
 			<label><input name="wpaesm_options[currency_position]" type="radio"
-						  value="before" 
-						  <?php
-							if ( isset( $this->options['currency_position'] ) ) {
-								checked( 'before', $this->options['currency_position'] );
-							}
-							?>
-				 /> <?php _e( 'Before (such as $100.00)', 'employee-scheduler' ); ?></label><br/>
+					value="before" 
+					<?php
+					if ( isset( $this->options['currency_position'] ) ) {
+						checked( 'before', $this->options['currency_position'] );
+					}
+					?>
+			/> <?php esc_html_e( 'Before (such as $100.00)', 'employee-scheduler' ); ?></label><br/>
 			<label><input name="wpaesm_options[currency_position]" type="radio"
-						  value="after" 
-						  <?php
-							if ( isset( $this->options['currency_position'] ) ) {
-								checked( 'after', $this->options['currency_position'] );
-							}
-							?>
-				 /> <?php _e( 'After (such as 100.00 &euro;)', 'employee-scheduler' ); ?></label>
-			<br/><span class="description"><?php echo $args[0]; ?></span>
+						value="after" 
+						<?php
+						if ( isset( $this->options['currency_position'] ) ) {
+							checked( 'after', $this->options['currency_position'] );
+						}
+						?>
+				/> <?php esc_html_e( 'After (such as 100.00 &euro;)', 'employee-scheduler' ); ?></label>
+			<br/><span class="description"><?php echo esc_html( $args[0] ); ?></span>
 			<?php
 		}
 
@@ -602,7 +652,7 @@ if ( ! class_exists( 'Shiftee_Basic_Options' ) ) {
 		public function render_options() {
 			?>
 			<div class="wrap">
-				<h1><?php echo apply_filters( 'shiftee_name', __( 'Shiftee Basic', 'employee-scheduler' ) ); ?></h1>
+				<h1><?php echo esc_html( apply_filters( 'shiftee_name', __( 'Shiftee Basic', 'employee-scheduler' ) ) ); ?></h1>
 				<?php settings_errors(); ?>
 
 				<div id="shiftee-options-main">
@@ -648,7 +698,7 @@ if ( ! class_exists( 'Shiftee_Basic_Options' ) ) {
 		 */
 		public function validate_options( $input ) {
 
-			$options = $this->options; // make sure we don't over-write options from other Shiftee add-ons
+			$options = $this->options; // make sure we don't over-write options from other Shiftee add-ons.
 
 			if ( isset( $input['notification_from_name'] ) ) {
 				$options['notification_from_name'] = wp_filter_nohtml_kses( $input['notification_from_name'] );
@@ -674,31 +724,31 @@ if ( ! class_exists( 'Shiftee_Basic_Options' ) ) {
 				$options['time_format'] = wp_filter_nohtml_kses( $input['time_format'] );
 			}
 
-			if ( isset( $input['admin_notify_note'] ) && '1' == $input['admin_notify_note'] ) {
+			if ( isset( $input['admin_notify_note'] ) && '1' === $input['admin_notify_note'] ) {
 				$options['admin_notify_note'] = '1';
 			} else {
 				$options['admin_notify_note'] = '0';
 			}
 
-			if ( isset( $input['admin_notify_clockin'] ) && '1' == $input['admin_notify_clockin'] ) {
+			if ( isset( $input['admin_notify_clockin'] ) && '1' === $input['admin_notify_clockin'] ) {
 				$options['admin_notify_clockin'] = '1';
 			} else {
 				$options['admin_notify_clockin'] = '0';
 			}
 
-			if ( isset( $input['admin_notify_clockout'] ) && '1' == $input['admin_notify_clockout'] ) {
+			if ( isset( $input['admin_notify_clockout'] ) && '1' === $input['admin_notify_clockout'] ) {
 				$options['admin_notify_clockout'] = '1';
 			} else {
 				$options['admin_notify_clockout'] = '0';
 			}
 
-			if ( isset( $input['geolocation'] ) && '1' == $input['geolocation'] ) {
+			if ( isset( $input['geolocation'] ) && '1' === $input['geolocation'] ) {
 				$options['geolocation'] = '1';
 			} else {
 				$options['geolocation'] = '0';
 			}
 
-			if ( isset( $input['extra_shift_approval'] ) && '1' == $input['extra_shift_approval'] ) {
+			if ( isset( $input['extra_shift_approval'] ) && '1' === $input['extra_shift_approval'] ) {
 				$options['extra_shift_approval'] = '1';
 			} else {
 				$options['extra_shift_approval'] = '0';

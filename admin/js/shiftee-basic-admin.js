@@ -1,22 +1,28 @@
+/**
+ * Admin Functions.
+ *
+ * Dashboard JavaScript functionality for Shiftee.
+ *
+ * @link   https://morgan.wpalchemists.com
+ * @author Morgan Kay.
+ * @since  1.0.0
+ *
+ * @package    Shiftee Basic
+ * @subpackage Shiftee Basic/admin
+ */
+
 (function( $ ) {
 	'use strict';
 
 	$( document ).ready(
 		function() {
 
-			// if ( $.isFunction( $.fn.datepicker ) && typeof datetimepicker_options !== "undefined" ) {
-			// $('.shiftee-date-picker').datepicker({
-			// dateFormat: datetimepicker_options.date_format,
-			// firstDay: datetimepicker_options.first_day_of_week,
-			// });
-			// }
-
-			$( "#ui-datepicker-div" ).addClass( "cmb2-element" ); // make the datepicker work with CMB2 stylesheet
+			$( "#ui-datepicker-div" ).addClass( "cmb2-element" ); // make the datepicker work with CMB2 stylesheet.
 
 			if (jQuery( "#repeat" ).is( ':checked' )) {
-				jQuery( "#repeatfields" ).show();  // checked
+				jQuery( "#repeatfields" ).show();  // checked.
 			} else {
-				jQuery( "#repeatfields" ).hide();  // unchecked
+				jQuery( "#repeatfields" ).hide();  // unchecked.
 			}
 			jQuery( '#repeat' ).onchange = function() {
 				jQuery( '#repeatfields' ).style.display = this.checked ? 'block' : 'none';
