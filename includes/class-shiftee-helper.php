@@ -827,14 +827,16 @@ if ( ! class_exists( 'Shiftee_Helper' ) ) {
 		/**
 		 * List the allowed tags in a dropdown menu for wp_kses.
 		 *
+		 * @since 2.4.0
+		 *
 		 * @return array
 		 */
 		public function dropdown_allowed_html() {
 			$allowed_html = array(
-				'label'  => array(),
+				'label' => array(),
 				'select' => array(
 					'name' => array(),
-					'id'   => array(),
+					'id' => array(),
 				),
 				'option' => array(
 					'value'    => array(),

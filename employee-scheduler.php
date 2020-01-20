@@ -10,7 +10,7 @@
  * Plugin Name:       Shiftee Basic
  * Plugin URI:        https://shiftee.co
  * Description:       Complete staff schedule management system: create and display schedule, let employees clock in and out, report expenses.
- * Version:           2.3.0
+ * Version:           2.4.0
  * Author:            Morgan Kay
  * Author URI:        https://morgan.wpalchemists.com
  * License:           GPL-2.0+
